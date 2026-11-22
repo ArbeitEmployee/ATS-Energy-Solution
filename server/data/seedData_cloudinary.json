@@ -1,0 +1,1017 @@
+{
+  "categories": [
+    {
+      "id": "cat_lighting",
+      "name": "Lighting Solutions",
+      "slug": "lighting-solutions",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425396/atsenergybd/categories/lb5zfdruk3ea7x8qnplp.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425398/atsenergybd/categories/qba67gjvmdsucvjdze8t.jpg",
+      "description": "ATS AC LED Bulbs (5W to 22W), Emergency LED 12W, and durable Batten / Pendent Holders.",
+      "subcategories": [
+        "AC LED Bulbs",
+        "Emergency LED",
+        "Batten Holders"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_ac_led",
+          "name": "AC LED Bulbs",
+          "slug": "ac-led-bulbs",
+          "subSubCategories": [
+            {
+              "id": "subsub_5w_12w",
+              "name": "Standard 5W to 12W Bulbs",
+              "slug": "standard-5w-12w"
+            },
+            {
+              "id": "subsub_15w_22w",
+              "name": "Heavy Wattage 15W to 22W",
+              "slug": "heavy-wattage-15w-22w"
+            }
+          ]
+        },
+        {
+          "id": "sub_emergency",
+          "name": "Emergency LED",
+          "slug": "emergency-led",
+          "subSubCategories": [
+            {
+              "id": "subsub_rechargeable",
+              "name": "Rechargeable Auto Backup 12W",
+              "slug": "rechargeable-auto-12w"
+            }
+          ]
+        },
+        {
+          "id": "sub_holders",
+          "name": "Batten & Decorative Holders",
+          "slug": "batten-decorative-holders",
+          "subSubCategories": [
+            {
+              "id": "subsub_ceramic",
+              "name": "Heat Resistant Ceramic Core",
+              "slug": "ceramic-core"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_accessories",
+      "name": "Electrical Accessories",
+      "slug": "electrical-accessories",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425400/atsenergybd/categories/zb8ob8rz8gueg2udhcu0.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425402/atsenergybd/categories/tdevhk3wcisyvllmckpf.jpg",
+      "description": "Gang switches, Piano switch sockets, Circuit breakers, Main switches, Cut-outs, Change overs, Calling bells, Push switches.",
+      "subcategories": [
+        "Gang Switches",
+        "Piano Switch Sockets",
+        "Circuit Breakers (MCB)"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_gang_switches",
+          "name": "Gang Switches",
+          "slug": "gang-switches",
+          "subSubCategories": [
+            {
+              "id": "subsub_1_2_gang",
+              "name": "1 to 2 Gang Plates",
+              "slug": "1-2-gang"
+            },
+            {
+              "id": "subsub_3_4_gang",
+              "name": "3 to 4 Gang Plates",
+              "slug": "3-4-gang"
+            }
+          ]
+        },
+        {
+          "id": "sub_breakers",
+          "name": "Circuit Breakers (MCB)",
+          "slug": "circuit-breakers",
+          "subSubCategories": [
+            {
+              "id": "subsub_sp_mcb",
+              "name": "Single Pole (1P) MCB",
+              "slug": "1p-mcb"
+            },
+            {
+              "id": "subsub_dp_mcb",
+              "name": "Double Pole (2P) MCB",
+              "slug": "2p-mcb"
+            }
+          ]
+        },
+        {
+          "id": "sub_piano_sockets",
+          "name": "Piano Switch Sockets",
+          "slug": "piano-switch-sockets",
+          "subSubCategories": [
+            {
+              "id": "subsub_multi_socket",
+              "name": "Multi-Pin Power Socket",
+              "slug": "multi-pin-power-socket"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_cables",
+      "name": "Wiring, Cables & PVC",
+      "slug": "wiring-cables",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425404/atsenergybd/categories/msrx0rqcn3nhkrmpla36.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425405/atsenergybd/categories/styry4irjmrxebmuzncs.jpg",
+      "description": "ATS Electric Cables (1.0 RM to 2.5 RM), Copper wires, SDB/MDB boards, PVC pipes, channels, boards, royal plugs, screws.",
+      "subcategories": [
+        "Electric Cables",
+        "PVC Pipes & Channels",
+        "Distribution Boards"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_elec_cables",
+          "name": "Electric Cables",
+          "slug": "electric-cables",
+          "subSubCategories": [
+            {
+              "id": "subsub_1_5_rm",
+              "name": "1.0 RM to 1.5 RM House Wiring",
+              "slug": "1-0-1-5-rm"
+            },
+            {
+              "id": "subsub_2_5_rm",
+              "name": "2.5 RM Heavy Duty Copper",
+              "slug": "2-5-rm"
+            }
+          ]
+        },
+        {
+          "id": "sub_pvc",
+          "name": "PVC Pipes & Channels",
+          "slug": "pvc-pipes-channels",
+          "subSubCategories": [
+            {
+              "id": "subsub_pvc_channels",
+              "name": "Conduit Fittings & Bends",
+              "slug": "conduit-fittings"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_solar",
+      "name": "Solar Systems",
+      "slug": "solar-energy-systems",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425407/atsenergybd/categories/d3h6mibd8ohiyalcb6pl.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425409/atsenergybd/categories/r9tri1spsf3vlnmpxiqk.jpg",
+      "description": "Solar panels, 10AH & 20/30Ah auto charge controllers, and 30-watt Solar Adapters.",
+      "subcategories": [
+        "Solar Panels",
+        "Solar Auto Charge Controllers",
+        "Solar Adapters"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_solar_controllers",
+          "name": "Solar Auto Charge Controllers",
+          "slug": "solar-auto-charge-controllers",
+          "subSubCategories": [
+            {
+              "id": "subsub_10ah_30ah",
+              "name": "10Ah - 30Ah LCD PWM Controllers",
+              "slug": "10ah-30ah-pwm"
+            }
+          ]
+        },
+        {
+          "id": "sub_solar_panels",
+          "name": "Monocrystalline Solar Panels",
+          "slug": "monocrystalline-solar-panels",
+          "subSubCategories": [
+            {
+              "id": "subsub_pv_modules",
+              "name": "Grade A Photovoltaic Modules",
+              "slug": "pv-modules"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_fans",
+      "name": "Ceiling & Exhaust Fans",
+      "slug": "ceiling-exhaust-fans",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425410/atsenergybd/categories/lmeap1zudmuwrfxznlq4.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425411/atsenergybd/categories/wvlx4izib5ny2ezef9wv.jpg",
+      "description": "High speed energy-efficient ceiling fans, ventilation exhaust fans, and cooling solutions for home and industry.",
+      "subcategories": [
+        "Ceiling Fans",
+        "Exhaust Fans",
+        "Wall Mounted Fans"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_ceiling_fans",
+          "name": "Energy Saving Ceiling Fans",
+          "slug": "ceiling-fans",
+          "subSubCategories": [
+            {
+              "id": "subsub_56_inch",
+              "name": "56-inch Aerodynamic Blades",
+              "slug": "56-inch-fans"
+            },
+            {
+              "id": "subsub_bldc_fans",
+              "name": "BLDC Low-Wattage Motors",
+              "slug": "bldc-motors"
+            }
+          ]
+        },
+        {
+          "id": "sub_exhaust_fans",
+          "name": "Ventilation Exhaust Fans",
+          "slug": "exhaust-fans",
+          "subSubCategories": [
+            {
+              "id": "subsub_kitchen_bath",
+              "name": "Kitchen & Bathroom Louver Series",
+              "slug": "kitchen-bath-fans"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_distribution",
+      "name": "Distribution Boards & Panels",
+      "slug": "distribution-boards",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425412/atsenergybd/categories/jg50re1wfh8bgpcbqec5.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425414/atsenergybd/categories/rujfhvjqmv2a0qatcobo.jpg",
+      "description": "Heavy-duty SDB, MDB, change-over switches, industrial busbar chambers and breaker control enclosures.",
+      "subcategories": [
+        "Main Distribution Boards",
+        "Sub Distribution Boards",
+        "Changeover Switches"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_sdb_mdb",
+          "name": "MDB & SDB Enclosures",
+          "slug": "mdb-sdb-enclosures",
+          "subSubCategories": [
+            {
+              "id": "subsub_flush_surface",
+              "name": "Flush & Surface Mount Boxes",
+              "slug": "flush-surface-boxes"
+            }
+          ]
+        },
+        {
+          "id": "sub_changeover",
+          "name": "Manual & Auto Changeover",
+          "slug": "changeover-switches",
+          "subSubCategories": [
+            {
+              "id": "subsub_63a_100a",
+              "name": "63A - 100A Heavy Duty Cut-Outs",
+              "slug": "63a-100a-changeover"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat_power_backup",
+      "name": "IPS & Power Backup",
+      "slug": "ips-power-backup",
+      "image": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425415/atsenergybd/categories/vj5hrrb021sijclejzl9.jpg",
+      "banner": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425416/atsenergybd/categories/uaszwqdiejwjtaiq2nbt.jpg",
+      "description": "Pure sine wave IPS/UPS inverters, tubular battery solutions and uninterrupted residential power supplies.",
+      "subcategories": [
+        "Pure Sine Wave IPS",
+        "Tubular Batteries",
+        "Online UPS"
+      ],
+      "subCategoriesList": [
+        {
+          "id": "sub_sine_wave_ips",
+          "name": "Pure Sine Wave Inverters",
+          "slug": "pure-sine-wave-ips",
+          "subSubCategories": [
+            {
+              "id": "subsub_800va_1200va",
+              "name": "800VA - 1200VA Home Series",
+              "slug": "800va-1200va"
+            }
+          ]
+        },
+        {
+          "id": "sub_batteries",
+          "name": "Deep Cycle Tubular Batteries",
+          "slug": "tubular-batteries",
+          "subSubCategories": [
+            {
+              "id": "subsub_150ah_200ah",
+              "name": "150Ah - 200Ah Long Backup",
+              "slug": "150ah-200ah"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "name": "ATS Electric Cable (1.0 RM to 2.5 RM)",
+      "slug": "ats-electric-cable",
+      "category": "Wiring, Cables & PVC",
+      "subcategory": "Electric Cables",
+      "shortDescription": "High-grade 99.99% pure annealed copper electrical wiring cable with fire retardant PVC insulation.",
+      "description": "ATS Electric Cables are manufactured for high conductivity and low resistance. Designed with standard BDS 900 compliance, ensuring safety from short circuits and overloading across homes and industries.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425418/atsenergybd/products/e5lhpxy7zrhjlz7br5tv.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425420/atsenergybd/products/plao1k9h8wuppmvp1xrn.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Sizes Available",
+          "value": "1.0 RM, 1.3 RM, 1.5 RM, 2.0 RM, 2.5 RM"
+        },
+        {
+          "key": "Conductor",
+          "value": "99.99% Pure Electrolytic Copper"
+        },
+        {
+          "key": "Insulation",
+          "value": "Flame Retardant PVC (FR-PVC)"
+        },
+        {
+          "key": "Voltage Grade",
+          "value": "450/750V"
+        },
+        {
+          "key": "Standard",
+          "value": "BSTI Certified, BDS 900"
+        },
+        {
+          "key": "Warranty",
+          "value": "Official Company Warranty"
+        }
+      ],
+      "features": [
+        "Low electrical resistance and minimal voltage drop",
+        "High temperature fire-retardant outer sheath",
+        "Anti-termite and anti-rodent PVC jacket",
+        "Tested for commercial & residential installations"
+      ],
+      "applications": [
+        "House wiring",
+        "Commercial project distribution",
+        "Industrial panels"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Gang Switches",
+      "slug": "ats-gang-switches",
+      "category": "Electrical Accessories",
+      "subcategory": "Gang Switches",
+      "shortDescription": "Sleek and modern gang switches with silver alloy contact points and fireproof housing.",
+      "description": "ATS Gang Switches are engineered for smooth click operations, aesthetic wall integration, and long-lasting electrical reliability. Compatible with standard flush boxes.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425422/atsenergybd/products/atbp3joem0zuvoc3obzz.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425423/atsenergybd/products/kmojgmmtwufmnnfdfrow.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Configuration",
+          "value": "1 Gang, 2 Gang, 3 Gang, 4 Gang"
+        },
+        {
+          "key": "Current Rating",
+          "value": "10AX 250V AC"
+        },
+        {
+          "key": "Housing Material",
+          "value": "Fireproof Polycarbonate (PC)"
+        },
+        {
+          "key": "Contact",
+          "value": "Silver Alloy Contact Points"
+        },
+        {
+          "key": "Click Lifespan",
+          "value": "40,000+ Cycles"
+        }
+      ],
+      "features": [
+        "Minimalist slim profile design",
+        "High flame-retardant material",
+        "Easy screw clip installation",
+        "Shockproof and child-safe"
+      ],
+      "applications": [
+        "Apartments",
+        "Commercial offices",
+        "Hotels"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Piano Switch & Sockets",
+      "slug": "ats-piano-switch-sockets",
+      "category": "Electrical Accessories",
+      "subcategory": "Piano Switch Sockets",
+      "shortDescription": "Classic heavy-duty piano switches and multi-pin power sockets for reliable daily switching.",
+      "description": "ATS Piano switches and sockets are built for robust switching operations. Featuring heavy brass terminals and high-durability internal springs.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425425/atsenergybd/products/wkao65liqta7fomwms1j.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425427/atsenergybd/products/s7azgwudo3gejpueljyn.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Type",
+          "value": "Piano 1-Way Switch / 2-Pin & Multi Socket"
+        },
+        {
+          "key": "Terminal Material",
+          "value": "Heavy Solid Brass"
+        },
+        {
+          "key": "Voltage Rating",
+          "value": "250V AC, 6A / 10A"
+        },
+        {
+          "key": "Mounting",
+          "value": "Standard wooden & PVC piano boards"
+        }
+      ],
+      "features": [
+        "Reinforced heavy spring action",
+        "High spark resistance",
+        "Smooth tactile feedback"
+      ],
+      "applications": [
+        "Residential homes",
+        "Retail shops",
+        "Workshops"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Circuit Breakers (MCB)",
+      "slug": "ats-circuit-breakers",
+      "category": "Electrical Accessories",
+      "subcategory": "Circuit Breakers",
+      "shortDescription": "Precision miniature circuit breakers (MCB) for short-circuit and overload protection.",
+      "description": "ATS MCBs safeguard electrical networks by instantly interrupting abnormal fault currents. Built with bi-metal thermal trip and magnetic short-circuit coils.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425428/atsenergybd/products/h9suewarwkhnqz89aheo.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425430/atsenergybd/products/nomqheealzc0r9vndzda.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Poles",
+          "value": "Single Pole (1P) / Double Pole (2P)"
+        },
+        {
+          "key": "Current Rating",
+          "value": "6A, 10A, 16A, 20A, 32A, 40A, 63A"
+        },
+        {
+          "key": "Breaking Capacity",
+          "value": "6kA / 10kA"
+        },
+        {
+          "key": "Standard",
+          "value": "IEC 60898-1 Certified"
+        }
+      ],
+      "features": [
+        "Quick arc extinguishing mechanism",
+        "Visual ON/OFF trip indicator",
+        "DIN Rail standard mounting"
+      ],
+      "applications": [
+        "Main distribution boards",
+        "SDB boxes",
+        "Appliance protection"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Main Switches",
+      "slug": "ats-main-switches",
+      "category": "Electrical Accessories",
+      "subcategory": "Main Switches",
+      "shortDescription": "Heavy iron-clad main switch gear for primary power disconnection and meter isolation.",
+      "description": "ATS Main Switches offer positive power isolation for entire electrical installations. Equipped with ceramic fuse bases and quick-break mechanisms.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425432/atsenergybd/products/tufhqwr0zl2g4jokysas.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Rating",
+          "value": "32A, 63A, 100A Double / Triple Pole"
+        },
+        {
+          "key": "Enclosure",
+          "value": "Powder Coated Sheet Steel / Heavy Bakelite"
+        },
+        {
+          "key": "Voltage",
+          "value": "240V / 415V AC"
+        }
+      ],
+      "features": [
+        "Quick break contacts prevents continuous arcing",
+        "Robust heavy handle with lockout provision",
+        "Ceramic insulation blocks"
+      ],
+      "applications": [
+        "Building mains",
+        "Substations",
+        "Industrial entrances"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Cut-Outs",
+      "slug": "ats-cut-outs",
+      "category": "Electrical Accessories",
+      "subcategory": "Cut-Outs",
+      "shortDescription": "Porcelain & heavy bakelite electrical service cut-outs with high rupturing fuse wire slots.",
+      "description": "ATS Cut-Outs protect primary supply lines against sudden current surges. Made with vitrified porcelain bodies capable of handling high thermal loads.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425434/atsenergybd/products/fh4aflxd4c31b0jm3yl6.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Current Rating",
+          "value": "16A, 32A, 64A, 100A"
+        },
+        {
+          "key": "Body Material",
+          "value": "Heavy Vitrified Porcelain / Bakelite"
+        },
+        {
+          "key": "Terminal",
+          "value": "Brass terminal blocks"
+        }
+      ],
+      "features": [
+        "Flame and arc resistant",
+        "Standard fuse carrier fittings"
+      ],
+      "applications": [
+        "Service entrances",
+        "Distribution feeder pillars"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Change Overs",
+      "slug": "ats-change-overs",
+      "category": "Electrical Accessories",
+      "subcategory": "Change Overs",
+      "shortDescription": "Manual change over switch for seamless switching between Grid Power and Generator/Solar.",
+      "description": "ATS Changeover switches allow safe transfer between multiple power sources (e.g. DESCO/DPDC grid and Generator/IPS).",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425436/atsenergybd/products/si33attbr8a5og1tdt2n.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Poles",
+          "value": "2 Pole / 4 Pole"
+        },
+        {
+          "key": "Rated Current",
+          "value": "32A, 63A, 100A"
+        },
+        {
+          "key": "Operation",
+          "value": "Center-OFF (Source 1 - OFF - Source 2)"
+        }
+      ],
+      "features": [
+        "Zero risk of source cross-connection",
+        "Heavy brass knife contacts"
+      ],
+      "applications": [
+        "Generator backup transfer",
+        "Solar/Grid transfer"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS 100% Pure Copper Wires",
+      "slug": "ats-copper-wires",
+      "category": "Wiring, Cables & PVC",
+      "subcategory": "Copper Wires",
+      "shortDescription": "High-purity solid and stranded copper conductor wire for grounding and internal panel wiring.",
+      "description": "ATS Copper Wires are drawn from 99.99% pure grade A copper cathode to achieve maximum electrical conductivity and minimum thermal expansion.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425437/atsenergybd/products/s3iqznuyhpfakp3eeeao.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Conductor Purity",
+          "value": "99.99% Electrolytic Copper"
+        },
+        {
+          "key": "Gauge / Sizes",
+          "value": "Various standard gauge options"
+        },
+        {
+          "key": "Tensile Strength",
+          "value": "Annealed for flexibility"
+        }
+      ],
+      "features": [
+        "Exceptional conductivity",
+        "Corrosion resistant",
+        "Easy to bend and terminate"
+      ],
+      "applications": [
+        "Earthing / Grounding",
+        "Motor windings",
+        "Control panels"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS SDB & MDB Distribution Boards",
+      "slug": "ats-sdb-mdb-boards",
+      "category": "Wiring, Cables & PVC",
+      "subcategory": "SDB & MDB Boards",
+      "shortDescription": "Heavy-gauge powder coated metal distribution boxes for MCB and electrical control.",
+      "description": "ATS Sub Distribution Boards (SDB) and Main Distribution Boards (MDB) are designed with ample wiring space, standard neutral/earth bars, and sleek acrylic/metal doors.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425439/atsenergybd/products/v4pyhtwq4tospvxgzi4r.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425441/atsenergybd/products/m28l9f1xytsiose1ewag.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Ways Available",
+          "value": "2-4 Way, 6-8 Way, 10-12 Way, 16+ Way"
+        },
+        {
+          "key": "Mounting",
+          "value": "Surface & Flush Mountable"
+        },
+        {
+          "key": "Protection",
+          "value": "IP40 rated protection"
+        }
+      ],
+      "features": [
+        "Electro-galvanized sheet metal",
+        "Rust resistant powder coating",
+        "Pre-fitted DIN rails"
+      ],
+      "applications": [
+        "Residential flats",
+        "Offices",
+        "Industrial buildings"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Ding Dong & Melody Calling Bells",
+      "slug": "ats-calling-bells",
+      "category": "Electrical Accessories",
+      "subcategory": "Calling Bells",
+      "shortDescription": "Pleasant tone electronic doorbells designed with energy saving low-draw solenoids.",
+      "description": "ATS Calling Bells deliver clear, melodic acoustic alerts for modern entryways. Built with heat-resistant plastic and long-life electronic chimes.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425443/atsenergybd/products/dp87xlpckifwi2rsqjvr.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Chime Type",
+          "value": "Ding-Dong / Multi-tone Melody"
+        },
+        {
+          "key": "Operating Voltage",
+          "value": "220V - 240V AC"
+        },
+        {
+          "key": "Sound Level",
+          "value": "85 dB Clear Tone"
+        }
+      ],
+      "features": [
+        "Low power consumption",
+        "Contemporary aesthetic casing"
+      ],
+      "applications": [
+        "Homes, Apartments, Office doors"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Push Switches",
+      "slug": "ats-push-switches",
+      "category": "Electrical Accessories",
+      "subcategory": "Push Switches",
+      "shortDescription": "Momentary push button switches for calling bells, pump controllers, and industrial triggers.",
+      "description": "ATS Push switches provide instant contact closing on press. Built with phosphor bronze return springs.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425444/atsenergybd/products/wc3gpfgjyanf4qidieuz.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Operation",
+          "value": "Momentary Spring Return"
+        },
+        {
+          "key": "Rating",
+          "value": "6A / 10A 250V AC"
+        }
+      ],
+      "features": [
+        "High return spring durability",
+        "Clear bell icon imprint"
+      ],
+      "applications": [
+        "Calling bells",
+        "Motor start circuits"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Bottom / Batten Holders",
+      "slug": "ats-bottom-holders",
+      "category": "Lighting Solutions",
+      "subcategory": "Batten Holders",
+      "shortDescription": "Ceramic interior heat-resistant batten and pendant lamp holders for B22/E27 bulbs.",
+      "description": "ATS Holders are manufactured using flame-retardant exterior plastic and pure brass terminals with vitrified ceramic inserts to prevent melting under continuous bulb heat.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425446/atsenergybd/products/qhpcxxpfgesvko8zganr.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Base Type",
+          "value": "B22 (Pin) / E27 (Screw)"
+        },
+        {
+          "key": "Interior",
+          "value": "Ceramic core with brass plunger"
+        },
+        {
+          "key": "Max Temp",
+          "value": "Up to 180°C"
+        }
+      ],
+      "features": [
+        "No melting or yellowing",
+        "Heavy spring pressure for firm grip"
+      ],
+      "applications": [
+        "Wall and ceiling lighting"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Ceiling Roses",
+      "slug": "ats-ceiling-roses",
+      "category": "Electrical Accessories",
+      "subcategory": "Ceiling Roses",
+      "shortDescription": "3-plate wiring ceiling roses with brass terminal blocks for ceiling fans and hanging lights.",
+      "description": "ATS Ceiling Roses provide safe transition from concealed ceiling conduit to hanging fixtures and fans.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425448/atsenergybd/products/ezgikyrmklqy4j6ju6vw.jpg",
+      "gallery": [],
+      "attributes": [
+        {
+          "key": "Plates",
+          "value": "3-Terminal Heavy Brass"
+        },
+        {
+          "key": "Rating",
+          "value": "6A 250V AC"
+        }
+      ],
+      "features": [
+        "Flame retardant casing",
+        "Ample wiring conduit knockouts"
+      ],
+      "applications": [
+        "Ceiling fans, chandeliers, pendant lamps"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS PVC Pipes & Fittings",
+      "slug": "ats-pvc-pipe-fittings",
+      "category": "Wiring, Cables & PVC",
+      "subcategory": "PVC Pipe Fittings",
+      "shortDescription": "Heavy-wall electrical conduit PVC pipes, elbows, circular boxes, and bends.",
+      "description": "ATS PVC conduit fittings ensure smooth cable pulling and high mechanical impact protection for electrical conduit installations.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425450/atsenergybd/products/wexd3io4wmoy4uxwhl5k.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425452/atsenergybd/products/hkytb8n0gsg9zglvlho7.jpg",
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425453/atsenergybd/products/jkkkudxcg6pmg4s8fn7t.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Sizes",
+          "value": "1/2 inch, 3/4 inch, 1 inch"
+        },
+        {
+          "key": "Material",
+          "value": "Unplasticized PVC (uPVC)"
+        },
+        {
+          "key": "Property",
+          "value": "Self-extinguishing fire retardant"
+        }
+      ],
+      "features": [
+        "High pressure resistance",
+        "Smooth inner wall for friction-free cable routing"
+      ],
+      "applications": [
+        "Concealed wall wiring",
+        "Slab conduit casting"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Royal Plugs & Hardware Screws",
+      "slug": "ats-royal-plugs-screws",
+      "category": "Wiring, Cables & PVC",
+      "subcategory": "Royal Plugs & Screws",
+      "shortDescription": "Virgin nylon wall anchor royal plugs and zinc-plated anti-corrosion screws.",
+      "description": "ATS Royal plugs and screws provide strong, reliable masonry grip for mounting switch boards, lighting channels, and electrical boxes.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425455/atsenergybd/products/hq3woe4iqdbugisnueu3.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425456/atsenergybd/products/ojskdcrqhekqll1pavrz.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Sizes",
+          "value": "1 inch, 1.25 inch, 1.5 inch, 2 inch"
+        },
+        {
+          "key": "Material",
+          "value": "High elasticity Nylon + Zinc steel"
+        }
+      ],
+      "features": [
+        "Non-cracking anchor ribs",
+        "High pull-out resistance"
+      ],
+      "applications": [
+        "Wall mounting of switch boards & fixtures"
+      ],
+      "featured": false,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS AC LED Bulb (5W to 22W)",
+      "slug": "ats-ac-led-bulb",
+      "category": "Lighting Solutions",
+      "subcategory": "AC LED 5W to 22W",
+      "shortDescription": "Official ATS high lumen energy saving AC LED bulbs available from 5W, 12W, 15W, 18W up to 22W.",
+      "description": "The signature ATS AC LED series delivers bright, flicker-free lighting with up to 85% energy savings. Manufactured with high-efficiency drivers and surge protection to survive Bangladeshi voltage fluctuations.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425457/atsenergybd/products/v6svlbpd737romjbs6ly.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425459/atsenergybd/products/aaktg6l7hnuomwwe1l7a.jpg",
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425460/atsenergybd/products/ouimu8ctystug3x7esde.jpg",
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425462/atsenergybd/products/dk9gr3wyyjdvcrhzqtxv.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Wattages Available",
+          "value": "5W, 7W, 9W, 12W, 15W, 18W, 20W, 22W"
+        },
+        {
+          "key": "Base Type",
+          "value": "B22 (Pin) / E27 (Screw)"
+        },
+        {
+          "key": "Input Voltage",
+          "value": "AC 160V - 260V 50Hz"
+        },
+        {
+          "key": "Luminous Efficacy",
+          "value": "100 lm/Watt"
+        },
+        {
+          "key": "Color Temp",
+          "value": "6500K Daylight"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 Year Official Replacement"
+        }
+      ],
+      "features": [
+        "85% Energy Saving",
+        "Surge Protected Driver",
+        "Eco-friendly, zero mercury"
+      ],
+      "applications": [
+        "Homes, Showrooms, Corporate Offices, Factories"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Emergency LED Light 12W",
+      "slug": "ats-emergency-led-light-12w",
+      "category": "Lighting Solutions",
+      "subcategory": "ATS Emergency LED 12W",
+      "shortDescription": "Rechargeable intelligent emergency LED bulb with built-in Lithium battery and 4 hours backup.",
+      "description": "Automatic load shedding backup light. Charges while normal power is ON, and turns ON automatically the instant electricity cuts off.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425463/atsenergybd/products/lep8scm0t3xzzhahlmuf.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425464/atsenergybd/products/i89pjbqpkmqnktgpxibb.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Wattage",
+          "value": "12 Watt"
+        },
+        {
+          "key": "Battery",
+          "value": "High Grade Lithium-ion Battery"
+        },
+        {
+          "key": "Backup Time",
+          "value": "3.5 to 4 Hours"
+        },
+        {
+          "key": "Charging",
+          "value": "Automatic on standard B22/E27 line"
+        },
+        {
+          "key": "Warranty",
+          "value": "1 Year Company Warranty"
+        }
+      ],
+      "features": [
+        "Instant auto-on on load shedding",
+        "Touch activate sensor",
+        "Overcharge protection"
+      ],
+      "applications": [
+        "Homes, Shops, Clinics, Emergency exits"
+      ],
+      "featured": true,
+      "isAvailable": true
+    },
+    {
+      "name": "ATS Solar Systems (Panels, Auto Controllers & Adapters)",
+      "slug": "ats-solar-energy-systems",
+      "category": "Solar Systems",
+      "subcategory": "Solar Panels & Controllers",
+      "shortDescription": "High-efficiency solar panels, 10AH / 20-30Ah auto charge controllers, and 30-watt Solar Adapters.",
+      "description": "ATS Energy Solution provides end-to-end solar kits including monocrystalline panels, intelligent digital charge controllers, and solar DC adapters.",
+      "mainImage": "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425466/atsenergybd/products/sr7eleqhqv5ukeqiiaqx.jpg",
+      "gallery": [
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425469/atsenergybd/products/ormpykkaren0xjd1emt9.jpg",
+        "https://res.cloudinary.com/i4nzqqyz/image/upload/v1795425471/atsenergybd/products/j78wbud3fpne1ukly2bz.jpg"
+      ],
+      "attributes": [
+        {
+          "key": "Solar Adapter",
+          "value": "30-Watt High Efficiency Adapter"
+        },
+        {
+          "key": "Charge Controller",
+          "value": "10AH, 20Ah, 30Ah Auto Recognition (12V/24V)"
+        },
+        {
+          "key": "Panels",
+          "value": "Grade A Monocrystalline Solar PV Modules"
+        },
+        {
+          "key": "Warranty",
+          "value": "Long-term performance warranty"
+        }
+      ],
+      "features": [
+        "High solar conversion efficiency",
+        "Overcharge and reverse polarity protection"
+      ],
+      "applications": [
+        "Rooftop solar",
+        "Resort setups",
+        "Rural SHS installations"
+      ],
+      "featured": true,
+      "isAvailable": true
+    }
+  ]
+}
