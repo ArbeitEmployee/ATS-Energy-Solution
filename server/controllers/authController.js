@@ -4,17 +4,17 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'ats_super_secret_jwt_key_2026_bd_industrial';
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'ats_super_secret_refresh_token_2026_bd';
 
-// Generate access token (1 day as requested)
+// Generate access token from env
 const generateAccessToken = (id) => {
   return jwt.sign({ id }, JWT_SECRET, {
-    expiresIn: '1d'
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRE || '1d'
   });
 };
 
-// Generate refresh token (30 days as requested)
+// Generate refresh token from env
 const generateRefreshToken = (id) => {
   return jwt.sign({ id }, REFRESH_SECRET, {
-    expiresIn: '30d'
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRE || '30d'
   });
 };
 

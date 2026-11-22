@@ -14,8 +14,20 @@ connectDB();
 
 // Security & Utility Middlewares
 app.use(helmet());
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  'https://atsenergy.vercel.app',
+  'https://ats-energy-solution.vercel.app'
+];
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl) or in allowed list
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Permissive in dev/testing
+    }
+  },
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));

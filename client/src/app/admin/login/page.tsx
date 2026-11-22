@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Mail, ShieldAlert, ArrowRight } from 'lucide-react';
-import axios from 'axios';
+import api from '@/lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await api.post('/auth/login', {
         email,
         password
       });
