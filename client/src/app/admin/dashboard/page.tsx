@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Package, 
@@ -139,6 +139,25 @@ export default function AdminDashboardPage() {
   // Inquiries State
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(false);
+  const [inquiryFilter, setInquiryFilter] = useState<'all' | 'new' | 'contacted' | 'closed'>('all');
+  const [inquirySearch, setInquirySearch] = useState('');
+
+  // Filter inquiries memo/calculation
+  const filteredInquiries = useMemo(() => {
+    return inquiries.filter(inq => {
+      const isNew = inq.status === 'new' || !inq.status;
+      if (inquiryFilter === 'new' && !isNew) return false;
+      if (inquiryFilter === 'contacted' && inq.status !== 'contacted') return false;
+      if (inquiryFilter === 'closed' && inq.status !== 'closed') return false;
+
+      if (inquirySearch && inquirySearch.trim()) {
+        const q = inquirySearch.trim().toLowerCase();
+        const str = `${inq.name || ''} ${inq.phone || ''} ${inq.email || ''} ${inq.company || ''} ${inq.productOfInterest || ''} ${inq.message || ''}`.toLowerCase();
+        return str.includes(q);
+      }
+      return true;
+    });
+  }, [inquiries, inquiryFilter, inquirySearch]);
 
   // Load inquiries from Backend API and LocalStorage
   const loadInquiries = async () => {
@@ -4291,136 +4310,225 @@ export default function AdminDashboardPage() {
               </button>
             </div>
 
+            {/* Filter Tabs & Search Bar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200">
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                <button
+                  type="button"
+                  onClick={() => setInquiryFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    inquiryFilter === 'all'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  All ({inquiries.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInquiryFilter('new')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+                    inquiryFilter === 'new'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  New ({inquiries.filter(i => i.status === 'new' || !i.status).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInquiryFilter('contacted')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    inquiryFilter === 'contacted'
+                      ? 'bg-slate-800 text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  Contacted ({inquiries.filter(i => i.status === 'contacted').length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInquiryFilter('closed')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    inquiryFilter === 'closed'
+                      ? 'bg-slate-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  Archived ({inquiries.filter(i => i.status === 'closed').length})
+                </button>
+              </div>
+
+              {/* Search Box */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  placeholder="Search by name, phone, email..."
+                  value={inquirySearch}
+                  onChange={e => setInquirySearch(e.target.value)}
+                  className="w-full sm:w-64 pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                />
+              </div>
+            </div>
+
             {loadingInquiries ? (
               <div className="text-center py-12 text-slate-500 text-xs">Loading inquiries...</div>
-            ) : inquiries.length === 0 ? (
+            ) : filteredInquiries.length === 0 ? (
               <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
                 <MessageSquare className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                <h3 className="text-sm font-bold text-slate-700">No Inquiries Found Yet</h3>
+                <h3 className="text-sm font-bold text-slate-700">No Inquiries Found</h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Inquiries submitted via the Contact page or Popup will be recorded here immediately.
+                  {inquirySearch ? 'No inquiries match your search query.' : 'No inquiries recorded in this filter.'}
                 </p>
+                {inquirySearch && (
+                  <button
+                    type="button"
+                    onClick={() => setInquirySearch('')}
+                    className="mt-3 text-xs font-semibold text-blue-600 hover:underline"
+                  >
+                    Clear Search
+                  </button>
+                )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
-                {inquiries.map((inq, idx) => {
+              <div className="grid grid-cols-1 gap-3">
+                {filteredInquiries.map((inq, idx) => {
                   const inqId = inq._id || inq.id || `inq_${idx}`;
                   const isNew = inq.status === 'new' || !inq.status;
+                  const isContacted = inq.status === 'contacted';
+                  const isClosed = inq.status === 'closed';
                   const dateStr = inq.createdAt ? new Date(inq.createdAt).toLocaleString() : 'Recent';
 
                   return (
                     <div
                       key={inqId}
-                      className={`p-6 rounded-2xl bg-white border transition shadow-xs space-y-3 ${
-                        isNew ? 'border-emerald-400 ring-2 ring-emerald-500/10' : 'border-slate-200'
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-slate-900 text-base">{inq.name}</h4>
-                            {inq.company && (
-                              <span className="text-xs text-slate-500 font-medium">({inq.company})</span>
-                            )}
+                        className={`group rounded-xl border bg-white transition hover:shadow-sm ${
+                          isNew
+                            ? 'border-slate-300 shadow-2xs'
+                            : 'border-slate-200 opacity-90 hover:opacity-100'
+                        }`}
+                      >
+                        <div className="p-4 sm:p-5 space-y-3">
+                          {/* Top: Sender Name, Email, Status & Date (Clean Inbox Header) */}
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5">
+                              {/* Blue unread dot for new */}
+                              {isNew ? (
+                                <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0" title="Unread inquiry" />
+                              ) : (
+                                <span className="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0" title="Reviewed" />
+                              )}
+
+                              <span className="font-bold text-slate-900 text-sm tracking-tight">
+                                {inq.name}
+                              </span>
+
+                              {inq.company && (
+                                <span className="text-xs text-slate-500 font-normal">
+                                  • {inq.company}
+                                </span>
+                              )}
+
+                              {inq.email && (
+                                <span className="text-xs text-slate-400 font-normal hidden sm:inline">
+                                  &lt;{inq.email}&gt;
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-2 self-start sm:self-auto">
+                              <span className="text-[11px] text-slate-400 font-medium">
+                                {dateStr}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteInquiry(inqId)}
+                                className="text-slate-400 hover:text-rose-600 p-1 rounded-md hover:bg-slate-100 transition"
+                                title="Delete inquiry"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
-                          {inq.productOfInterest && (
-                            <p className="text-xs text-emerald-600 font-semibold mt-0.5">
-                              Subject / Interest: {inq.productOfInterest}
-                            </p>
-                          )}
-                        </div>
 
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`text-[10px] uppercase font-bold px-2.5 py-1 rounded-md ${
-                              inq.status === 'contacted'
-                                ? 'bg-sky-100 text-sky-800'
-                                : inq.status === 'closed'
-                                ? 'bg-slate-100 text-slate-600'
-                                : 'bg-emerald-100 text-emerald-800'
-                            }`}
-                          >
-                            {inq.status || 'New'}
-                          </span>
+                          {/* Subject Line (Like Gmail/Outlook Subject) */}
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="font-semibold text-slate-600">Subject:</span>
+                            <span className="font-medium text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                              {inq.productOfInterest || 'General Contact Inquiry'}
+                            </span>
+                          </div>
 
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteInquiry(inqId)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
-                            title="Delete Inquiry"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+                          {/* Email Body: Simple, clean white card with subtle quote styling */}
+                          <div className="p-3 bg-slate-50/70 rounded-lg border border-slate-100 text-xs sm:text-sm text-slate-700 font-normal whitespace-pre-wrap leading-relaxed">
+                            {inq.message || 'No additional requirement message provided.'}
+                          </div>
 
-                      {/* Message body */}
-                      <p className="text-xs sm:text-sm text-slate-700 bg-slate-50 p-3.5 rounded-xl border border-slate-100 whitespace-pre-wrap leading-relaxed">
-                        &quot;{inq.message || 'No additional requirement message provided.'}&quot;
-                      </p>
+                          {/* Bottom: Contact Details & Status Bar */}
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+                            <div className="flex flex-wrap items-center gap-3 text-slate-600">
+                              <a
+                                href={`tel:${inq.phone}`}
+                                className="font-semibold text-blue-600 hover:underline inline-flex items-center gap-1"
+                              >
+                                📞 {inq.phone}
+                              </a>
+                              {inq.email && (
+                                <a
+                                  href={`mailto:${inq.email}`}
+                                  className="hover:text-slate-900 inline-flex items-center gap-1"
+                                >
+                                  ✉️ {inq.email}
+                                </a>
+                              )}
+                            </div>
 
-                      {/* Contact and action footer */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs text-slate-500">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <a
-                            href={`tel:${inq.phone}`}
-                            className="font-bold text-emerald-600 hover:underline inline-flex items-center gap-1"
-                          >
-                            📞 {inq.phone}
-                          </a>
-                          {inq.email && (
-                            <a
-                              href={`mailto:${inq.email}`}
-                              className="text-slate-600 hover:underline inline-flex items-center gap-1"
-                            >
-                              ✉️ {inq.email}
-                            </a>
-                          )}
-                          <span className="text-slate-400 text-[11px]">• {dateStr}</span>
-                        </div>
-
-                        {/* Status Change Buttons */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-[11px] text-slate-400 mr-1">Mark:</span>
-                          <button
-                            type="button"
-                            onClick={() => handleUpdateInquiryStatus(inqId, 'new')}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition ${
-                              inq.status === 'new' || !inq.status
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                            }`}
-                          >
-                            New
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleUpdateInquiryStatus(inqId, 'contacted')}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition ${
-                              inq.status === 'contacted'
-                                ? 'bg-sky-600 text-white border-sky-600'
-                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                            }`}
-                          >
-                            Contacted
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleUpdateInquiryStatus(inqId, 'closed')}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition ${
-                              inq.status === 'closed'
-                                ? 'bg-slate-700 text-white border-slate-700'
-                                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                            }`}
-                          >
-                            Closed
-                          </button>
+                            {/* Minimal Email Status Tag & Toggle */}
+                            <div className="flex items-center gap-1 self-end sm:self-auto">
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateInquiryStatus(inqId, 'new')}
+                                className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${
+                                  isNew
+                                    ? 'bg-blue-600 text-white font-semibold shadow-2xs'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                                }`}
+                              >
+                                New
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateInquiryStatus(inqId, 'contacted')}
+                                className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${
+                                  isContacted
+                                    ? 'bg-slate-800 text-white font-semibold shadow-2xs'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                                }`}
+                              >
+                                Contacted
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateInquiryStatus(inqId, 'closed')}
+                                className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition ${
+                                  isClosed
+                                    ? 'bg-slate-600 text-white font-semibold shadow-2xs'
+                                    : 'text-slate-600 hover:bg-slate-100'
+                                }`}
+                              >
+                                Archived
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
             )}
           </div>
         )}
