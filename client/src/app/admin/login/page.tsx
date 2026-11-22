@@ -53,14 +53,11 @@ export default function AdminLoginPage() {
 
       <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-2xl relative z-10">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-slate-950 font-black text-2xl mx-auto mb-4 shadow-lg shadow-emerald-500/20">
-            ⚡
-          </div>
           <h2 className="text-2xl font-black text-white tracking-tight">
-            ATS Energy CMS
+            ATS Energy Solutions
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Enterprise Product & Catalog Management System
+            Enterprise Product &amp; Catalog Management System
           </p>
         </div>
 
