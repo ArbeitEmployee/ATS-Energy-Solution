@@ -43,7 +43,7 @@ export default function HomeProductsSection({ initialProducts }: HomeProductsSec
   }, []);
 
   return (
-    <section className="py-16 bg-slate-50 border-b border-slate-200">
+    <section className="py-8 sm:py-16 bg-slate-50 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Header */}

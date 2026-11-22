@@ -1,10 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { submitInquiry } from '@/lib/api';
 
+const DEFAULT_CONTACT_INFO = {
+  address: 'Sonali Neer, Holding-615/9/1, Bosila Road, Mohammadpur, Dhaka-1207, Bangladesh',
+  phone: '+880 1848-160565 / +880 1711-703541',
+  hotline: '+880 1848 160565',
+  email: 'info@atsenergybd.com',
+  hours: 'Saturday - Thursday: 9:00 AM – 7:00 PM'
+};
+
 export default function ContactPage() {
+  const [contactInfo, setContactInfo] = useState(DEFAULT_CONTACT_INFO);
+
+  useEffect(() => {
+    // Read custom contact info if modified in localStorage
+    try {
+      const saved = localStorage.getItem('ats_custom_contact_info');
+      if (saved) {
+        setContactInfo({ ...DEFAULT_CONTACT_INFO, ...JSON.parse(saved) });
+      }
+    } catch (e) {}
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ats_custom_contact_info' && e.newValue) {
+        try {
+          setContactInfo({ ...DEFAULT_CONTACT_INFO, ...JSON.parse(e.newValue) });
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -55,6 +85,8 @@ export default function ContactPage() {
     }
   };
 
+  const encodedMapAddress = encodeURIComponent(contactInfo.address);
+
   return (
     <div className="bg-slate-50 min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
@@ -79,21 +111,21 @@ export default function ContactPage() {
               <ul className="space-y-4 text-sm text-slate-300">
                 <li className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Sonali Neer, Holding-615/9/1, Bosila Road, Mohammadpur, Dhaka-1207, Bangladesh</span>
+                  <span>{contactInfo.address}</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span>+880 1848-160565 / +880 1711-703541</span>
+                  <span>{contactInfo.phone}</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span>info@atsenergybd.com</span>
+                  <span>{contactInfo.email}</span>
                 </li>
               </ul>
 
               <div className="pt-4 border-t border-slate-800">
                 <span className="text-xs font-semibold text-slate-400 block mb-1">Business Hours:</span>
-                <p className="text-sm font-medium text-white">Saturday - Thursday: 9:00 AM – 7:00 PM</p>
+                <p className="text-sm font-medium text-white">{contactInfo.hours}</p>
               </div>
             </div>
 
@@ -104,10 +136,10 @@ export default function ContactPage() {
                 Direct hotline for urgent commercial purchase inquiries:
               </p>
               <a
-                href="tel:+8801848160565"
+                href={`tel:${contactInfo.hotline.replace(/\s+/g, '')}`}
                 className="inline-block text-sm font-bold text-emerald-600 hover:text-emerald-700"
               >
-                📞 +880 1848 160565
+                📞 {contactInfo.hotline}
               </a>
             </div>
           </div>
@@ -205,6 +237,44 @@ export default function ContactPage() {
                 </button>
               </form>
             )}
+          </div>
+        </div>
+
+        {/* Full-Width Google Map Section (Directly below Contact Details & Inquiry Form) */}
+        <div className="mt-12 w-full bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-2">
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-emerald-600 shrink-0" />
+                <span>Live Office & Factory Location Map</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {contactInfo.address}
+              </p>
+            </div>
+            <a 
+              href={`https://maps.google.com/?q=${encodedMapAddress}`}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold rounded-xl transition border border-slate-200 hover:border-emerald-200 shrink-0 shadow-xs"
+            >
+              <span>Open in Google Maps</span>
+              <span>↗</span>
+            </a>
+          </div>
+
+          {/* Full-width Responsive Map Frame with generous height */}
+          <div className="w-full h-80 sm:h-[420px] rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+            <iframe
+              title="ATS Energy Location Map"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://maps.google.com/maps?q=${encodedMapAddress}&t=&z=16&ie=UTF8&iwloc=&output=embed`}
+            />
           </div>
         </div>
       </div>

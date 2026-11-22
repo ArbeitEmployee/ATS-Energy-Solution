@@ -40,7 +40,7 @@ export default function HomeCategoriesSection({ initialCategories }: HomeCategor
   const displayCategories = categories.slice(0, 5);
 
   return (
-    <section className="py-14 bg-white border-b border-slate-200">
+    <section className="py-8 sm:py-14 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
         {/* Section Heading (View All Products removed as requested) */}

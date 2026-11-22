@@ -28,14 +28,14 @@ export default function HomeServicesSection() {
   }, []);
 
   return (
-    <section className="py-20 bg-white border-b border-slate-200">
+    <section className="py-8 sm:py-16 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Section Heading */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-2">
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-14">
+          <span className="text-[11px] sm:text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1 sm:mb-2">
             ATS Services & Solutions
           </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
             Get the Services & Support
           </h2>
         </div>
