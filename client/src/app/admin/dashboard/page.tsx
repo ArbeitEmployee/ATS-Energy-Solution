@@ -27,7 +27,8 @@ import {
   Share2,
   Search,
   FileText,
-  BellRing
+  BellRing,
+  Menu
 } from 'lucide-react';
 import { Product, Attribute, Banner, Category, SubCategory, SubSubCategory, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, LegalContent, PopupSettings, Inquiry } from '@/types';
 import { fallbackProducts, initialBanners, fallbackCategories, fallbackServices, fallbackPartnerReviews, fallbackKeyClients, fallbackAboutContent, fallbackSocialMedia, fallbackSEO, fallbackLegalContent, fallbackPopupSettings, atsOfficialLogo } from '@/lib/data';
@@ -52,6 +53,9 @@ export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<
     'categories' | 'sub-categories' | 'sub-sub-categories' | 'about-page' | 'services' | 'partner-reviews' | 'key-clients' | 'socials' | 'seo' | 'legal-pages' | 'popup-settings' | 'banners' | 'products' | 'new-product' | 'inquiries'
   >('socials');
+
+  // Mobile drawer state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Modal State for adding items cleanly
   const [showCatModal, setShowCatModal] = useState(false);
@@ -1241,10 +1245,22 @@ export default function AdminDashboardPage() {
   const modalTargetSubList = modalTargetCatObj?.subCategoriesList || [];
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 text-slate-800">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 text-slate-800 relative">
       
-      {/* 🌟 Professional Standalone Admin Sidebar (Crisp White / Slate Style) 🌟 */}
-      <aside className="w-64 sm:w-72 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-sm">
+      {/* Mobile Drawer Overlay */}
+      {mobileMenuOpen && (
+        <div
+          onClick={() => setMobileMenuOpen(false)}
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+        />
+      )}
+
+      {/* 🌟 Professional Standalone Admin Sidebar (Responsive Slide-over Drawer on Mobile) 🌟 */}
+      <aside
+        className={`fixed lg:static top-0 bottom-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 shadow-xl lg:shadow-sm transition-transform duration-300 ease-in-out ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
         {/* Top Brand Header */}
         <div className="flex flex-col flex-1 overflow-hidden">
           <div className="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
@@ -1257,6 +1273,15 @@ export default function AdminDashboardPage() {
                 <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">CMS Enterprise</span>
               </div>
             </div>
+
+            {/* Mobile Close Button */}
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="lg:hidden p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition"
+              title="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Sidebar Menu Items: Logical Sectional Grouping with Serial Numbering */}
@@ -1510,25 +1535,37 @@ export default function AdminDashboardPage() {
       </aside>
 
       {/* 🖥️ Main Dashboard Workspace (Crisp Professional Light Theme) 🖥️ */}
-      <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 p-6 sm:p-10">
+      <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 p-4 sm:p-6 lg:p-10 w-full min-w-0">
         
-        {/* Top Status Bar */}
-        <div className="flex items-center justify-between pb-6 border-b border-slate-200 mb-8">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-              <span>Admin Management</span>
-              <span>/</span>
-              <span className="text-emerald-600">{activeTab.replace('-', ' ')}</span>
+        {/* Top Status Bar with Mobile Hamburger */}
+        <div className="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-200 mb-6 sm:mb-8 gap-3">
+          <div className="flex items-center gap-3">
+            {/* Hamburger Button on Mobile */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition shadow-2xs"
+              title="Open menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            <div>
+              <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+                <span className="hidden sm:inline">Admin Management</span>
+                <span className="hidden sm:inline">/</span>
+                <span className="text-emerald-600 truncate max-w-[150px] sm:max-w-none">{activeTab.replace('-', ' ')}</span>
+              </div>
+              <h1 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight capitalize truncate">
+                {activeTab.replace('-', ' ')}
+              </h1>
             </div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight capitalize">
-              {activeTab.replace('-', ' ')}
-            </h1>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Live System</span>
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="hidden sm:inline">Live System</span>
+              <span className="sm:hidden">Live</span>
             </span>
           </div>
         </div>
@@ -1555,8 +1592,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Categories Table / Card Grid */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full min-w-[640px] text-left text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
                     <th className="py-3.5 px-5">Image</th>
@@ -1743,8 +1780,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Sub-Categories Table */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full min-w-[640px] text-left text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
                     <th className="py-3.5 px-5">Sub-Category Name</th>
@@ -1903,8 +1940,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Sub-Sub Table */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full min-w-[640px] text-left text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
                     <th className="py-3.5 px-5">Sub-Sub-Category Name</th>
@@ -2057,23 +2094,18 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'about-page' && (
           <div className="space-y-6 max-w-5xl">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Info className="w-6 h-6 text-emerald-600" />
-                  <span>About Us Page Management</span>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-2xs">
+                <Info className="w-6 h-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                  About Us Page Management
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Customize the corporate intro, image, vision, mission, counter statistics, values, and why choose us points.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleSaveAbout}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
-              >
-                Save About Page
-              </button>
             </div>
 
             <form onSubmit={handleSaveAbout} className="space-y-6">
@@ -2327,7 +2359,7 @@ export default function AdminDashboardPage() {
                   type="submit"
                   className="px-8 py-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
                 >
-                  Save All Changes to About Page
+                  Save
                 </button>
               </div>
             </form>
@@ -2340,15 +2372,19 @@ export default function AdminDashboardPage() {
         {activeTab === 'services' && (
           <div className="space-y-6 max-w-6xl">
             {/* Header with Title and Add Service Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Wrench className="w-6 h-6 text-cyan-600" />
-                  <span>Services & Support Management</span>
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Manage commercial services, dealership programs, solar engineering, and support offerings shown on the website.
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-100 flex items-center justify-center shrink-0 text-cyan-600 shadow-2xs">
+                  <Wrench className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                    Services &amp; Support Management
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    Manage commercial services, dealership programs, solar engineering, and support offerings shown on the website.
+                  </p>
+                </div>
               </div>
 
               <button
@@ -2361,8 +2397,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Services Table List */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full min-w-[640px] text-left text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
                     <th className="py-3.5 px-5">Image</th>
@@ -2532,15 +2568,19 @@ export default function AdminDashboardPage() {
         {activeTab === 'partner-reviews' && (
           <div className="space-y-6 max-w-6xl">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Quote className="w-6 h-6 text-emerald-600" />
-                  <span>What Our Partners Say</span>
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Manage client testimonials, dealer reviews, and corporate partner feedback shown on the homepage.
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0 text-amber-600 shadow-2xs">
+                  <Quote className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                    What Our Partners Say
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    Manage client testimonials, dealer reviews, and corporate partner feedback shown on the homepage.
+                  </p>
+                </div>
               </div>
 
               <button
@@ -2553,8 +2593,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Reviews Table */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-              <table className="w-full text-left text-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full min-w-[640px] text-left text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
                     <th className="py-3.5 px-5">Partner / Client</th>
@@ -2889,23 +2929,18 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'socials' && (
           <div className="space-y-6 max-w-4xl">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Share2 className="w-6 h-6 text-pink-600" />
-                  <span>Official Social Media Accounts</span>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-pink-50 border border-pink-100 flex items-center justify-center shrink-0 text-pink-600 shadow-2xs">
+                <Share2 className="w-6 h-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                  Official Social Media Accounts
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Manage external links for Facebook, WhatsApp, Instagram, YouTube, LinkedIn, and Twitter shown in the Navbar and Footer.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleSaveSocials}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
-              >
-                Save Social Links
-              </button>
             </div>
 
             <form onSubmit={handleSaveSocials} className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
@@ -3008,7 +3043,7 @@ export default function AdminDashboardPage() {
                   type="submit"
                   className="px-8 py-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
                 >
-                  Save All Social Media Links
+                  Save
                 </button>
               </div>
             </form>
@@ -3020,23 +3055,18 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'seo' && (
           <div className="space-y-6 max-w-4xl">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <Search className="w-6 h-6 text-blue-600" />
-                  <span>Search Engine Optimization (SEO) &amp; Meta Tags</span>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-blue-600 shadow-2xs">
+                <Search className="w-6 h-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                  Search Engine Optimization (SEO) &amp; Meta Tags
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Configure Google search meta title, description, keywords, Open Graph image, and Google Search Console verification tag.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleSaveSEO}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
-              >
-                Save SEO Settings
-              </button>
             </div>
 
             <form onSubmit={handleSaveSEO} className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
@@ -3162,7 +3192,7 @@ export default function AdminDashboardPage() {
                   type="submit"
                   className="px-8 py-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
                 >
-                  Save SEO &amp; Meta Settings
+                  Save
                 </button>
               </div>
             </form>
@@ -3174,23 +3204,18 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'legal-pages' && (
           <div className="space-y-8 max-w-5xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
-              <div>
-                <h2 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-emerald-600" />
-                  <span>Terms &amp; Conditions and Privacy Policy Management</span>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
+                <FileText className="w-6 h-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                  Terms &amp; Conditions and Privacy Policy Management
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Edit the content displayed on <Link href="/terms-and-conditions" target="_blank" className="text-emerald-600 underline font-semibold">/terms-and-conditions</Link> and <Link href="/privacy-policy" target="_blank" className="text-emerald-600 underline font-semibold">/privacy-policy</Link>
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleSaveLegal}
-                className="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
-              >
-                Save All Legal Pages
-              </button>
             </div>
 
             <form onSubmit={handleSaveLegal} className="space-y-8">
@@ -3283,7 +3308,7 @@ export default function AdminDashboardPage() {
                   type="submit"
                   className="px-8 py-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
                 >
-                  Save All Legal Pages
+                  Save
                 </button>
               </div>
             </form>
@@ -3295,13 +3320,15 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'popup-settings' && (
           <div className="space-y-8 max-w-5xl">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
-              <div>
-                <h2 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                  <BellRing className="w-5 h-5 text-emerald-600" />
-                  <span>Website Entry Popup Management</span>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0 text-amber-600 shadow-2xs">
+                <BellRing className="w-6 h-6" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                  Website Entry Popup Management
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   Manage the promotional or inquiry popup that appears immediately when visitors open the website.
                 </p>
               </div>
@@ -3776,66 +3803,132 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'products' && (
           <div className="space-y-6 max-w-6xl">
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-slate-900">Registered Products List ({products.length})</h2>
-                <p className="text-xs text-slate-500">All inventory items stored in ATS system</p>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-2xs">
+                  <Package className="w-6 h-6" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                    Registered Products List ({products.length})
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    All inventory items stored in ATS system
+                  </p>
+                </div>
               </div>
+
               <button
                 onClick={handleStartNewProduct}
-                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                className="self-start sm:self-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm shrink-0"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>+ Add Product</span>
               </button>
             </div>
 
-            <div className="overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
-                    <th className="py-3.5 px-5">Product Name</th>
-                    <th className="py-3.5 px-5">Category</th>
-                    <th className="py-3.5 px-5">Sub-Category</th>
-                    <th className="py-3.5 px-5">Specs Count</th>
-                    <th className="py-3.5 px-5 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {products.map((p, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/80 transition">
-                      <td className="py-3 px-5 font-semibold text-slate-900 flex items-center gap-3">
-                        <img src={p.mainImage} alt="" className="w-10 h-10 rounded-xl object-cover border border-slate-200 bg-slate-100" />
-                        <div>
-                          <span className="font-bold block text-sm">{p.name}</span>
-                          <span className="text-[11px] text-emerald-600 font-semibold">{p.brand || 'ATS Energy'} • {p.features?.length || 0} Features</span>
+            {/* Products Inventory View */}
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+              {/* Desktop & Tablet Table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full min-w-[640px] text-left text-xs">
+                  <thead>
+                    <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
+                      <th className="py-3.5 px-5">Product Name</th>
+                      <th className="py-3.5 px-5">Category</th>
+                      <th className="py-3.5 px-5">Sub-Category</th>
+                      <th className="py-3.5 px-5">Specs Count</th>
+                      <th className="py-3.5 px-5 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {products.map((p, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/80 transition">
+                        <td className="py-3 px-5 font-semibold text-slate-900 flex items-center gap-3">
+                          <img src={p.mainImage} alt="" className="w-10 h-10 rounded-xl object-cover border border-slate-200 bg-slate-100 shrink-0" />
+                          <div className="min-w-0">
+                            <span className="font-bold block text-sm truncate max-w-xs">{p.name}</span>
+                            <span className="text-[11px] text-emerald-600 font-semibold">{p.brand || 'ATS Energy'} • {p.features?.length || 0} Features</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-5 text-slate-600 font-medium">{p.category}</td>
+                        <td className="py-3 px-5 text-slate-500">{p.subcategory || '-'}</td>
+                        <td className="py-3 px-5 text-slate-600 font-semibold">{p.attributes?.length || 0} Specs</td>
+                        <td className="py-3 px-5 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => handleOpenEditProduct(p)}
+                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                              title="Edit Product & Features"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(p.slug)}
+                              className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                              title="Delete Product"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card Layout */}
+              <div className="sm:hidden divide-y divide-slate-100">
+                {products.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-slate-400">No products found</div>
+                ) : (
+                  products.map((p, idx) => (
+                    <div key={idx} className="p-4 space-y-3">
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={p.mainImage}
+                          alt=""
+                          className="w-14 h-14 rounded-xl object-cover border border-slate-200 bg-slate-100 shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-sm text-slate-900 leading-snug line-clamp-2">
+                            {p.name}
+                          </h4>
+                          <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">
+                            {p.brand || 'ATS Energy'} • {p.features?.length || 0} Features
+                          </p>
                         </div>
-                      </td>
-                      <td className="py-3 px-5 text-slate-600 font-medium">{p.category}</td>
-                      <td className="py-3 px-5 text-slate-500">{p.subcategory || '-'}</td>
-                      <td className="py-3 px-5 text-slate-600 font-semibold">{p.attributes?.length || 0} Specs</td>
-                      <td className="py-3 px-5 text-right">
-                        <div className="flex items-center justify-end gap-1">
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100/80">
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">Category</span>
+                          <span className="font-medium text-slate-700 text-[11px]">
+                            {p.category} {p.subcategory ? `› ${p.subcategory}` : ''}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
                           <button
                             onClick={() => handleOpenEditProduct(p)}
-                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
-                            title="Edit Product & Features"
+                            className="p-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition"
+                            title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(p.slug)}
-                            className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                            title="Delete Product"
+                            className="p-2 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition"
+                            title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -3844,7 +3937,7 @@ export default function AdminDashboardPage() {
             PAGE 6: ADD / EDIT PRODUCT
            ======================================================== */}
         {activeTab === 'new-product' && (
-          <form onSubmit={handleCreateProduct} className="space-y-6 max-w-5xl bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+          <form onSubmit={handleCreateProduct} className="space-y-6 max-w-5xl bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-sm">
             <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-slate-900">
@@ -3866,7 +3959,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Cascading Dropdowns */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
               <h3 className="text-xs font-bold uppercase text-emerald-600">1. Dependent Category Mapping</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -3948,7 +4041,7 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Product Variants: Sizes, Colors, Warranty */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
               <h3 className="text-xs font-bold uppercase text-emerald-600">2. Product Specifications &amp; Variants</h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
@@ -3996,11 +4089,11 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Media Section: Main Image Upload/URL + 4 Extra Gallery Images + Video URL */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-5">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-5">
               <h3 className="text-xs font-bold uppercase text-emerald-600">3. Media Upload (Images &amp; Video)</h3>
 
               {/* Main Image */}
-              <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-3">
                 <label className="block text-xs font-bold uppercase text-slate-700">
                   Main Product Image * (Choose Local File or Paste Optional URL)
                 </label>
@@ -4026,7 +4119,7 @@ export default function AdminDashboardPage() {
                 {mainImage && (
                   <div className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
                     <div className="flex items-center gap-3">
-                      <div className="w-16 h-16 rounded-lg overflow-hidden border border-slate-200 bg-white p-1 flex items-center justify-center">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-slate-200 bg-white p-1 flex items-center justify-center shrink-0">
                         <img src={mainImage} alt="Main Preview" className="max-h-full max-w-full object-contain" />
                       </div>
                       <span className="text-xs text-emerald-700 font-bold">✓ Main Image Selected</span>
@@ -4045,8 +4138,8 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Extra Gallery Images: Single uploader + Dynamic List */}
-              <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-4">
-                <div className="flex items-center justify-between">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                   <div>
                     <label className="block text-xs font-bold uppercase text-slate-700">
                       Extra Gallery Images
@@ -4055,7 +4148,7 @@ export default function AdminDashboardPage() {
                       Upload from file or enter image URL. Added images will appear in the list below.
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                  <span className="self-start sm:self-auto text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
                     {galleryImages.length} Images Added
                   </span>
                 </div>
@@ -4074,18 +4167,18 @@ export default function AdminDashboardPage() {
                       />
                     </label>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input
                         type="text"
                         placeholder="Or paste Image URL..."
                         value={currentExtraInput}
                         onChange={e => setCurrentExtraInput(e.target.value)}
-                        className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800"
+                        className="flex-1 min-w-0 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800"
                       />
                       <button
                         type="button"
                         onClick={() => handleAddExtraImage(currentExtraInput)}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shrink-0"
                       >
                         Add URL
                       </button>
@@ -4127,7 +4220,7 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Video: File Upload OR YouTube / Direct Video URL */}
-              <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 space-y-3">
                 <label className="block text-xs font-bold uppercase text-slate-700">
                   Product Demonstration Video (Upload Video File OR Paste YouTube / MP4 Link)
                 </label>
@@ -4153,16 +4246,16 @@ export default function AdminDashboardPage() {
 
                 {videoUrl && (
                   <div className="pt-2 flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                      <span className="text-xs font-semibold text-slate-800">
-                        {videoUrl.startsWith('data:') ? '✓ Video File Uploaded Successfully' : `✓ Video Link: ${videoUrl.slice(0, 45)}...`}
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                      <span className="text-xs font-semibold text-slate-800 truncate">
+                        {videoUrl.startsWith('data:') ? '✓ Video File Uploaded Successfully' : `✓ Video Link: ${videoUrl.slice(0, 30)}...`}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => setVideoUrl('')}
-                      className="text-xs text-rose-600 hover:underline font-bold"
+                      className="text-xs text-rose-600 hover:underline font-bold shrink-0 ml-2"
                     >
                       Remove Video
                     </button>
@@ -4173,7 +4266,7 @@ export default function AdminDashboardPage() {
 
             {/* Product Key Features (Bullet Points) */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <div>
                   <h3 className="text-xs font-bold uppercase text-emerald-600">Product Key Features (Bullet Points)</h3>
                   <span className="text-[11px] text-slate-500">Add highlight features shown in the Features tab and product overview</span>
@@ -4181,10 +4274,11 @@ export default function AdminDashboardPage() {
                 <button
                   type="button"
                   onClick={handleAddFeature}
-                  className="text-xs text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs"
+                  className="text-xs text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs shrink-0"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
-                  <span>+ Add Feature</span>
+                  <span className="hidden sm:inline">+ Add Feature</span>
+                  <span className="sm:hidden">+ Add</span>
                 </button>
               </div>
 
@@ -4196,12 +4290,12 @@ export default function AdminDashboardPage() {
                       placeholder="e.g. High luminous efficacy with clear daylight output"
                       value={feat}
                       onChange={e => handleFeatureChange(idx, e.target.value)}
-                      className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900"
+                      className="flex-1 min-w-0 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveFeature(idx)}
-                      className="text-rose-600 hover:text-rose-700 p-2"
+                      className="text-rose-600 hover:text-rose-700 p-2 shrink-0"
                       title="Remove Feature"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -4255,19 +4349,19 @@ export default function AdminDashboardPage() {
                       placeholder="Key (e.g. Wattage)"
                       value={attr.key}
                       onChange={e => handleAttributeChange(idx, 'key', e.target.value)}
-                      className="w-1/2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900"
+                      className="w-1/2 min-w-0 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900"
                     />
                     <input
                       type="text"
                       placeholder="Value (e.g. 18 Watt)"
                       value={attr.value}
                       onChange={e => handleAttributeChange(idx, 'value', e.target.value)}
-                      className="w-1/2 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900"
+                      className="w-1/2 min-w-0 bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveAttribute(idx)}
-                      className="text-rose-600 hover:text-rose-700 p-2"
+                      className="text-rose-600 hover:text-rose-700 p-2 shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -4278,7 +4372,7 @@ export default function AdminDashboardPage() {
 
             <button
               type="submit"
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition text-xs shadow-sm"
+              className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-xl transition text-xs shadow-sm"
             >
               Save Product into ATS Database
             </button>
@@ -4290,21 +4384,25 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'inquiries' && (
           <div className="space-y-6 max-w-5xl">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-              <div>
-                <h2 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-emerald-600" />
-                  <span>Customer &amp; Quotation Inquiries</span>
-                </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  All inquiries submitted from the website Contact Page and Entry Quotation Popup appear here in real-time.
-                </p>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-2xs">
+                  <MessageSquare className="w-6 h-6" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                    Customer &amp; Quotation Inquiries
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    All inquiries submitted from the website Contact Page and Entry Quotation Popup appear here in real-time.
+                  </p>
+                </div>
               </div>
 
               <button
                 type="button"
                 onClick={loadInquiries}
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                className="self-start sm:self-auto px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition shrink-0 shadow-2xs"
               >
                 Refresh Inquiries
               </button>

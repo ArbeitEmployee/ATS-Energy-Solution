@@ -86,8 +86,8 @@ export default function HomeProductsSection({ initialProducts }: HomeProductsSec
           </div>
         )}
 
-        {/* Grid of Real Products */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Grid of Real Products (Mobile: 2 columns, Tablet: 2 columns, Desktop: 4 columns) */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {products.slice(0, 8).map((product, idx) => (
             <ProductCard key={product.slug || product._id || idx} product={product} />
           ))}
