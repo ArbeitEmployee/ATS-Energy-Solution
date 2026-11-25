@@ -1,4 +1,4 @@
-import { Product, Category, Banner, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, PopupSettings } from '@/types';
+import { Product, Category, Banner, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, PopupSettings, FAQItem } from '@/types';
 
 export const atsOfficialLogo = "https://atsenergybd.com/wp-content/uploads/2025/09/PHOTO-2026-11-04-12-23-02.jpg";
 
@@ -667,28 +667,32 @@ export const fallbackServices: ServiceItem[] = [
     id: "srv_wholesale",
     title: "Wholesale & Dealership Business",
     description: "Special tier pricing, dedicated stock allocation, marketing materials, and full distributor support for hardware shops and retail dealers across Bangladesh.",
-    image: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+    secondaryImage: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=600&q=80",
     link: "/contact"
   },
   {
     id: "srv_commercial",
     title: "Commercial & Industrial Project Engineering",
     description: "Direct project supply of BDS certified pure copper cables, sub-distribution boards, industrial MCB circuit breakers, and lighting layouts for towers and factories.",
-    image: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-2-768x305.jpeg",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
+    secondaryImage: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
     link: "/contact"
   },
   {
     id: "srv_solar",
     title: "Solar Energy Setup & Consultation",
     description: "Complete off-grid and hybrid solar installations, auto charge controllers (10A-30A), monocrystalline panels, and eco-friendly clean energy infrastructure.",
-    image: "https://atsenergybd.com/wp-content/uploads/2026/11/Solar-Adpter-1-copy.jpg",
+    image: "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+    secondaryImage: "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&w=600&q=80",
     link: "/contact"
   },
   {
     id: "srv_oem",
     title: "OEM & Custom Electrical Manufacturing",
     description: "Contract manufacturing of premium gang switch designs, LED drivers, PVC conduit fittings, and specialized electrical hardware under your private brand label.",
-    image: "https://atsenergybd.com/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-28-at-18.43.19.jpeg",
+    image: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
+    secondaryImage: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=600&q=80",
     link: "/contact"
   }
 ];
@@ -723,6 +727,39 @@ export const fallbackPartnerReviews: PartnerReview[] = [
     designation: "Satkania, Chattagram",
     quote: "“Their product build quality is truly excellent and warranty replacement process is fast and reliable.”",
     rating: 5
+  }
+];
+
+export const fallbackFAQs: FAQItem[] = [
+  {
+    id: "faq_1",
+    question: "HOW DOES SOLAR ENERGY & HYBRID INVERTER WORK?",
+    answer: "Solar photovoltaic panels capture sunlight and convert it into DC electricity. The hybrid inverter converts this DC into standard AC 220V power for your appliances, factory machinery, or battery storage backup system."
+  },
+  {
+    id: "faq_2",
+    question: "IS SOLAR ENERGY & ATS INDUSTRIAL WIRING WORTH IT?",
+    answer: "Yes, investing in pure copper cables and commercial solar setups slashes monthly national grid electricity bills by up to 60-70% with long-term 25-year panel performance warranties and zero downtime."
+  },
+  {
+    id: "faq_3",
+    question: "HOW LONG DOES COMMERCIAL INSTALLATION TAKE?",
+    answer: "Typical commercial rooftop and industrial electrical distribution setups take between 3 to 10 working days, depending on system kilowatt capacity and site wiring readiness."
+  },
+  {
+    id: "faq_4",
+    question: "DO ATS SOLAR PANELS WORK ON CLOUDY DAYS?",
+    answer: "Yes. ATS Monocrystalline Grade-A photovoltaic panels are engineered with high low-light sensitivity to generate steady voltage even during overcast monsoon skies."
+  },
+  {
+    id: "faq_5",
+    question: "HOW MUCH MAINTENANCE IS NEEDED?",
+    answer: "Solar systems and industrial electrical fittings require very minimal upkeep. Routine periodic surface cleaning with water every few weeks ensures 100% peak generation efficiency."
+  },
+  {
+    id: "faq_6",
+    question: "CAN SOLAR POWER MY ENTIRE FACTORY OR BUILDING?",
+    answer: "Absolutely. With appropriately engineered solar panel arrays, hybrid inverter banks, and battery storage capacities, ATS Energy Solution can power 100% of your factory or building requirements."
   }
 ];
 

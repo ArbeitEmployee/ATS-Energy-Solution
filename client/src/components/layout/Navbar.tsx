@@ -112,42 +112,108 @@ export default function Navbar() {
 
         {/* Mobile Hamburger */}
         <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-slate-700 hover:text-emerald-600 p-2"
+          type="button"
+          onClick={() => setMobileMenuOpen(true)}
+          className="md:hidden text-slate-700 hover:text-emerald-600 p-2 rounded-lg transition cursor-pointer"
+          aria-label="Open mobile menu"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <Menu className="w-6 h-6" />
         </button>
       </div>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3">
-          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-bold text-slate-800 hover:text-emerald-600">
-            Home
-          </Link>
-          <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-bold text-slate-800 hover:text-emerald-600">
-            About
-          </Link>
-          <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-bold text-slate-800 hover:text-emerald-600">
-            Service
-          </Link>
-          <Link href="/products" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-bold text-slate-800 hover:text-emerald-600">
-            Products
-          </Link>
-          <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-bold text-slate-800 hover:text-emerald-600">
-            Contact
-          </Link>
-          <div className="pt-2">
+      {/* Mobile Drawer (Side-Slide from Right - Completely Self-Contained Fixed Overlay) */}
+      <div 
+        className={`fixed inset-0 z-[999] md:hidden transition-all duration-300 ${
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
+        }`}
+      >
+        {/* Dark Backdrop Overlay */}
+        <div 
+          onClick={() => setMobileMenuOpen(false)}
+          className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm cursor-pointer"
+        />
+
+        {/* Side-Slide Solid White Drawer Panel */}
+        <aside 
+          className={`absolute top-0 right-0 h-full w-[85%] max-w-xs bg-white text-slate-900 shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-out transform ${
+            mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          {/* Drawer Top Header */}
+          <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+            <img
+              src={atsOfficialLogo}
+              alt="ATS ENERGY SOLUTIONS"
+              className="h-9 w-auto object-contain"
+            />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition cursor-pointer"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation Links list */}
+          <div className="flex-1 overflow-y-auto px-4 py-5 space-y-1 bg-white">
+            <Link 
+              href="/" 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="flex items-center px-4 py-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition"
+            >
+              Home
+            </Link>
+            <Link 
+              href="/about" 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="flex items-center px-4 py-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition"
+            >
+              About
+            </Link>
+            <Link 
+              href="/services" 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="flex items-center px-4 py-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition"
+            >
+              Service
+            </Link>
+            <Link 
+              href="/products" 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="flex items-center px-4 py-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition"
+            >
+              Products
+            </Link>
+            <Link 
+              href="/contact" 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="flex items-center px-4 py-3 rounded-xl text-sm font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 transition"
+            >
+              Contact
+            </Link>
+          </div>
+
+          {/* Drawer Bottom Action & Hotline */}
+          <div className="p-4 sm:p-5 border-t border-slate-100 space-y-3 bg-slate-50 shrink-0">
             <Link
               href="/contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-center bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs"
+              className="block w-full text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider shadow-md shadow-emerald-600/20 transition"
             >
               Request Quotation
             </Link>
+            <a 
+              href="tel:+8801848160565" 
+              className="flex items-center justify-center gap-2 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-600 transition"
+            >
+              <Phone className="w-3.5 h-3.5 text-emerald-600" />
+              <span>+880 1848-160565</span>
+            </a>
           </div>
-        </div>
-      )}
+        </aside>
+      </div>
     </header>
   );
 }

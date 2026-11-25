@@ -28,10 +28,11 @@ import {
   Search,
   FileText,
   BellRing,
-  Menu
+  Menu,
+  HelpCircle
 } from 'lucide-react';
-import { Product, Attribute, Banner, Category, SubCategory, SubSubCategory, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, LegalContent, PopupSettings, Inquiry } from '@/types';
-import { fallbackProducts, initialBanners, fallbackCategories, fallbackServices, fallbackPartnerReviews, fallbackKeyClients, fallbackAboutContent, fallbackSocialMedia, fallbackSEO, fallbackLegalContent, fallbackPopupSettings, atsOfficialLogo } from '@/lib/data';
+import { Product, Attribute, Banner, Category, SubCategory, SubSubCategory, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, LegalContent, PopupSettings, Inquiry, FAQItem } from '@/types';
+import { fallbackProducts, initialBanners, fallbackCategories, fallbackServices, fallbackPartnerReviews, fallbackKeyClients, fallbackAboutContent, fallbackSocialMedia, fallbackSEO, fallbackLegalContent, fallbackPopupSettings, fallbackFAQs, atsOfficialLogo } from '@/lib/data';
 import { getInquiries, updateInquiryStatus } from '@/lib/api';
 import Link from 'next/link';
 
@@ -48,10 +49,14 @@ export default function AdminDashboardPage() {
   const [seo, setSeo] = useState<SEOMetadata>(fallbackSEO);
   const [legalData, setLegalData] = useState<LegalContent>(fallbackLegalContent);
   const [popupData, setPopupData] = useState<PopupSettings>(fallbackPopupSettings);
+  const [faqs, setFaqs] = useState<FAQItem[]>(fallbackFAQs);
+  const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
+  const [faqQuestion, setFaqQuestion] = useState('');
+  const [faqAnswer, setFaqAnswer] = useState('');
 
   // Active Navigation Tab
   const [activeTab, setActiveTab] = useState<
-    'categories' | 'sub-categories' | 'sub-sub-categories' | 'about-page' | 'services' | 'partner-reviews' | 'key-clients' | 'socials' | 'seo' | 'legal-pages' | 'popup-settings' | 'banners' | 'products' | 'new-product' | 'inquiries'
+    'categories' | 'sub-categories' | 'sub-sub-categories' | 'about-page' | 'services' | 'partner-reviews' | 'key-clients' | 'socials' | 'seo' | 'legal-pages' | 'popup-settings' | 'banners' | 'products' | 'new-product' | 'inquiries' | 'faqs'
   >('socials');
 
   // Mobile drawer state
@@ -80,11 +85,12 @@ export default function AdminDashboardPage() {
   const [clientLogo, setClientLogo] = useState('');
   const [clientWebsite, setClientWebsite] = useState('');
 
-  // Form State: Service (Title, Description, Image)
+  // Form State: Service (Title, Description, Image, Secondary Image)
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [serviceTitle, setServiceTitle] = useState('');
   const [serviceDesc, setServiceDesc] = useState('');
   const [serviceImage, setServiceImage] = useState('');
+  const [serviceSecondaryImage, setServiceSecondaryImage] = useState('');
 
   // Form State: Category (Name, Image, Banner)
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
@@ -353,6 +359,18 @@ export default function AdminDashboardPage() {
       }
     } else {
       setPopupData(fallbackPopupSettings);
+    }
+
+    const savedFaqs = localStorage.getItem('ats_custom_faqs');
+    if (savedFaqs) {
+      try {
+        const parsedF = JSON.parse(savedFaqs);
+        if (Array.isArray(parsedF) && parsedF.length > 0) setFaqs(parsedF);
+      } catch (e) {
+        setFaqs(fallbackFAQs);
+      }
+    } else {
+      setFaqs(fallbackFAQs);
     }
 
     const savedProdBanner = localStorage.getItem('ats_product_section_banner');
@@ -789,6 +807,7 @@ export default function AdminDashboardPage() {
     setServiceTitle('');
     setServiceDesc('');
     setServiceImage('');
+    setServiceSecondaryImage('');
     setShowServiceModal(true);
   };
 
@@ -797,6 +816,7 @@ export default function AdminDashboardPage() {
     setServiceTitle(srv.title);
     setServiceDesc(srv.description);
     setServiceImage(srv.image || '');
+    setServiceSecondaryImage(srv.secondaryImage || '');
     setShowServiceModal(true);
   };
 
@@ -815,7 +835,8 @@ export default function AdminDashboardPage() {
               ...s,
               title: serviceTitle,
               description: serviceDesc,
-              image: serviceImage || s.image
+              image: serviceImage || s.image,
+              secondaryImage: serviceSecondaryImage || undefined
             }
           : s
       );
@@ -825,6 +846,7 @@ export default function AdminDashboardPage() {
         title: serviceTitle,
         description: serviceDesc,
         image: serviceImage || 'https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg',
+        secondaryImage: serviceSecondaryImage || undefined,
         link: '/contact'
       };
       updatedList = [newService, ...services];
@@ -837,6 +859,7 @@ export default function AdminDashboardPage() {
     setServiceTitle('');
     setServiceDesc('');
     setServiceImage('');
+    setServiceSecondaryImage('');
   };
 
   const handleDeleteService = (targetId?: string) => {
@@ -965,6 +988,61 @@ export default function AdminDashboardPage() {
     setKeyClients(updated);
     localStorage.setItem('ats_custom_key_clients', JSON.stringify(updated));
     setShowClientModal(false);
+  };
+
+  // FAQ CRUD
+  const handleOpenAddFaq = () => {
+    setEditingFaqId(null);
+    setFaqQuestion('');
+    setFaqAnswer('');
+  };
+
+  const handleOpenEditFaq = (f: FAQItem) => {
+    setEditingFaqId(f.id || f._id || null);
+    setFaqQuestion(f.question);
+    setFaqAnswer(f.answer);
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  };
+
+  const handleSaveFaq = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!faqQuestion.trim() || !faqAnswer.trim()) {
+      alert('Please provide both FAQ Question and Answer.');
+      return;
+    }
+
+    let updated: FAQItem[] = [];
+    if (editingFaqId) {
+      updated = faqs.map(f => 
+        (f.id === editingFaqId || f._id === editingFaqId)
+          ? { ...f, question: faqQuestion.trim(), answer: faqAnswer.trim() }
+          : f
+      );
+      alert('FAQ updated successfully!');
+    } else {
+      const newFaq: FAQItem = {
+        id: `faq_${Date.now()}`,
+        question: faqQuestion.trim(),
+        answer: faqAnswer.trim()
+      };
+      updated = [...faqs, newFaq];
+      alert('FAQ added successfully!');
+    }
+
+    setFaqs(updated);
+    localStorage.setItem('ats_custom_faqs', JSON.stringify(updated));
+    setEditingFaqId(null);
+    setFaqQuestion('');
+    setFaqAnswer('');
+  };
+
+  const handleDeleteFaq = (targetId?: string) => {
+    if (!targetId) return;
+    if (confirm('Are you sure you want to delete this FAQ?')) {
+      const updated = faqs.filter(f => (f.id !== targetId && f._id !== targetId));
+      setFaqs(updated);
+      localStorage.setItem('ats_custom_faqs', JSON.stringify(updated));
+    }
   };
 
   const handleDeleteClient = (targetId?: string) => {
@@ -1462,6 +1540,19 @@ export default function AdminDashboardPage() {
                 <FileText className={`w-4 h-4 shrink-0 transition ${activeTab === 'legal-pages' ? 'text-white' : 'text-slate-500'}`} />
                 <span>12. Terms &amp; Privacy Pages</span>
               </button>
+
+              {/* 13. FAQ Management */}
+              <button
+                onClick={() => setActiveTab('faqs')}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition text-left ${
+                  activeTab === 'faqs'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <HelpCircle className={`w-4 h-4 shrink-0 transition ${activeTab === 'faqs' ? 'text-white' : 'text-slate-500'}`} />
+                <span>13. FAQs Management</span>
+              </button>
             </div>
 
             {/* SECTION 4: COMMUNICATIONS & SEO */}
@@ -1470,7 +1561,7 @@ export default function AdminDashboardPage() {
                 Marketing &amp; Inquiries
               </div>
 
-              {/* 13. Customer Inquiries */}
+              {/* 14. Customer Inquiries */}
               <button
                 onClick={() => setActiveTab('inquiries')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition text-left ${
@@ -1480,10 +1571,10 @@ export default function AdminDashboardPage() {
                 }`}
               >
                 <MessageSquare className={`w-4 h-4 shrink-0 transition ${activeTab === 'inquiries' ? 'text-white' : 'text-slate-500'}`} />
-                <span>13. Customer Inquiries</span>
+                <span>14. Customer Inquiries</span>
               </button>
 
-              {/* 14. Social Media Links */}
+              {/* 15. Social Media Links */}
               <button
                 onClick={() => setActiveTab('socials')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition text-left ${
@@ -1493,10 +1584,10 @@ export default function AdminDashboardPage() {
                 }`}
               >
                 <Share2 className={`w-4 h-4 shrink-0 transition ${activeTab === 'socials' ? 'text-white' : 'text-slate-500'}`} />
-                <span>14. Social Media Links</span>
+                <span>15. Social Media Links</span>
               </button>
 
-              {/* 15. SEO & Meta Tags */}
+              {/* 16. SEO & Meta Tags */}
               <button
                 onClick={() => setActiveTab('seo')}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition text-left ${
@@ -1506,7 +1597,7 @@ export default function AdminDashboardPage() {
                 }`}
               >
                 <Search className={`w-4 h-4 shrink-0 transition ${activeTab === 'seo' ? 'text-white' : 'text-slate-500'}`} />
-                <span>15. SEO &amp; Meta Tags</span>
+                <span>16. SEO &amp; Meta Tags</span>
               </button>
             </div>
 
@@ -2371,7 +2462,7 @@ export default function AdminDashboardPage() {
            ======================================================== */}
         {activeTab === 'services' && (
           <div className="space-y-6 max-w-6xl">
-            {/* Header with Title and Add Service Button */}
+            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-100 flex items-center justify-center shrink-0 text-cyan-600 shadow-2xs">
@@ -2387,13 +2478,183 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <button
-                onClick={handleOpenAddService}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition shadow-md shrink-0"
-              >
-                <PlusCircle className="w-4 h-4" />
-                <span>+ Add Service</span>
-              </button>
+              {!editingServiceId && (
+                <button
+                  onClick={() => {
+                    setEditingServiceId(null);
+                    setServiceTitle('');
+                    setServiceDesc('');
+                    setServiceImage('');
+                    setServiceSecondaryImage('');
+                    window.scrollTo({ top: 300, behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition shadow-md shrink-0"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>+ Create New Service</span>
+                </button>
+              )}
+            </div>
+
+            {/* In-Page Add / Edit Service Form (No Popup Modal) */}
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-cyan-600" />
+                  <span>{editingServiceId ? 'Edit Existing Service' : 'Add New Service (Direct Form)'}</span>
+                </h3>
+                {editingServiceId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingServiceId(null);
+                      setServiceTitle('');
+                      setServiceDesc('');
+                      setServiceImage('');
+                      setServiceSecondaryImage('');
+                    }}
+                    className="text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition"
+                  >
+                    Cancel Editing
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveService} className="space-y-6">
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
+                      Service Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Solar Energy Setup & Consultation"
+                      value={serviceTitle}
+                      onChange={e => setServiceTitle(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
+                      Service Description *
+                    </label>
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder="Describe the service details, support scope, deliverables, warranty..."
+                      value={serviceDesc}
+                      onChange={e => setServiceDesc(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                {/* 2 Image Upload Slots (Image 1 Primary & Image 2 Optional) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 sm:p-6 bg-slate-50/80 border border-slate-200 rounded-2xl">
+                  {/* Image 1: Primary Image */}
+                  <div className="space-y-3 bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase text-slate-800">
+                        Primary Service Image *
+                      </label>
+                      <span className="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200">
+                        Main Card
+                      </span>
+                    </div>
+                    
+                    <label className="flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-50/60 border border-cyan-200 border-dashed rounded-xl cursor-pointer hover:bg-cyan-100/60 text-xs font-bold text-cyan-800 transition">
+                      <Upload className="w-4 h-4 text-cyan-600" />
+                      <span>Choose File (Image 1)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => handleImageFile(e, setServiceImage)}
+                      />
+                    </label>
+                    
+                    <input
+                      type="text"
+                      placeholder="Or paste Image 1 URL..."
+                      value={serviceImage}
+                      onChange={e => setServiceImage(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+
+                    {serviceImage && (
+                      <div className="relative mt-2 w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                        <img src={serviceImage} alt="Primary Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setServiceImage('')}
+                          className="absolute top-2 right-2 bg-rose-600 hover:bg-rose-500 text-white p-1 rounded-full shadow"
+                          title="Remove image"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Image 2: Secondary Image (Optional) */}
+                  <div className="space-y-3 bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase text-slate-800">
+                        Secondary Service Image
+                      </label>
+                      <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        Optional (2nd Photo)
+                      </span>
+                    </div>
+
+                    <label className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-200 border-dashed rounded-xl cursor-pointer hover:bg-slate-100 text-xs font-bold text-slate-600 transition">
+                      <Upload className="w-4 h-4 text-slate-500" />
+                      <span>Choose File (Image 2 - Optional)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => handleImageFile(e, setServiceSecondaryImage)}
+                      />
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="Or paste Image 2 URL (optional)..."
+                      value={serviceSecondaryImage}
+                      onChange={e => setServiceSecondaryImage(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    />
+
+                    {serviceSecondaryImage && (
+                      <div className="relative mt-2 w-full h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
+                        <img src={serviceSecondaryImage} alt="Secondary Preview" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => setServiceSecondaryImage('')}
+                          className="absolute top-2 right-2 bg-rose-600 hover:bg-rose-500 text-white p-1 rounded-full shadow"
+                          title="Remove image"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md transition"
+                  >
+                    {editingServiceId ? 'Update Service' : 'Save'}
+                  </button>
+                </div>
+              </form>
             </div>
 
             {/* Services Table List */}
@@ -2401,7 +2662,7 @@ export default function AdminDashboardPage() {
               <table className="w-full min-w-[640px] text-left text-xs">
                 <thead>
                   <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
-                    <th className="py-3.5 px-5">Image</th>
+                    <th className="py-3.5 px-5">Images</th>
                     <th className="py-3.5 px-5">Service Title</th>
                     <th className="py-3.5 px-5">Description</th>
                     <th className="py-3.5 px-5 text-right">Actions</th>
@@ -2411,18 +2672,25 @@ export default function AdminDashboardPage() {
                   {services.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="py-8 text-center text-slate-400">
-                        No services added yet. Click &quot;+ Add Service&quot; above to create one.
+                        No services added yet. Fill the form above to create one.
                       </td>
                     </tr>
                   ) : (
                     services.map((srv, idx) => (
                       <tr key={srv.id || srv._id || idx} className="hover:bg-slate-50/80 transition">
                         <td className="py-3 px-5">
-                          <div className="w-16 h-12 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
-                            {srv.image ? (
-                              <img src={srv.image} alt={srv.title} className="w-full h-full object-cover" />
-                            ) : (
-                              <ImageIcon className="w-5 h-5 text-slate-400" />
+                          <div className="flex items-center gap-2">
+                            <div className="w-14 h-11 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                              {srv.image ? (
+                                <img src={srv.image} alt={srv.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <ImageIcon className="w-4 h-4 text-slate-400" />
+                              )}
+                            </div>
+                            {srv.secondaryImage && (
+                              <div className="w-14 h-11 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0" title="Secondary Image">
+                                <img src={srv.secondaryImage} alt="Secondary" className="w-full h-full object-cover" />
+                              </div>
                             )}
                           </div>
                         </td>
@@ -2439,7 +2707,10 @@ export default function AdminDashboardPage() {
                         <td className="py-3 px-5 text-right">
                           <div className="flex items-center justify-end gap-1">
                             <button
-                              onClick={() => handleOpenEditService(srv)}
+                              onClick={() => {
+                                handleOpenEditService(srv);
+                                window.scrollTo({ top: 300, behavior: 'smooth' });
+                              }}
                               className="p-2 text-cyan-600 hover:bg-cyan-50 rounded-lg transition"
                               title="Edit Service"
                             >
@@ -2460,105 +2731,6 @@ export default function AdminDashboardPage() {
                 </tbody>
               </table>
             </div>
-
-            {/* Modal: Add or Edit Service */}
-            {showServiceModal && (
-              <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 className="text-base font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                      <Wrench className="w-5 h-5 text-cyan-600" />
-                      <span>{editingServiceId ? 'Edit Service' : 'Add New Service'}</span>
-                    </h3>
-                    <button
-                      onClick={() => setShowServiceModal(false)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleSaveService} className="space-y-4">
-                    {/* Title */}
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                        Service Title *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Solar Energy Setup & Consultation"
-                        value={serviceTitle}
-                        onChange={e => setServiceTitle(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                        Service Description *
-                      </label>
-                      <textarea
-                        required
-                        rows={4}
-                        placeholder="Describe the service details, support scope, deliverables, warranty..."
-                        value={serviceDesc}
-                        onChange={e => setServiceDesc(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                      />
-                    </div>
-
-                    {/* Image (Upload or URL) */}
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
-                        Service Image (Upload or URL)
-                      </label>
-                      <div className="space-y-2">
-                        <label className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 border-dashed rounded-xl cursor-pointer hover:bg-slate-100 text-xs font-bold text-slate-600 transition">
-                          <Upload className="w-4 h-4 text-cyan-600" />
-                          <span>Choose Local Image File</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={e => handleImageFile(e, setServiceImage)}
-                          />
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Or paste direct image URL (https://...)"
-                          value={serviceImage}
-                          onChange={e => setServiceImage(e.target.value)}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                        />
-                      </div>
-                      {serviceImage && (
-                        <div className="mt-2 w-full h-24 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center">
-                          <img src={serviceImage} alt="Preview" className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-                      <button
-                        type="button"
-                        onClick={() => setShowServiceModal(false)}
-                        className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow"
-                      >
-                        {editingServiceId ? 'Update Service' : 'Save Service'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -3312,6 +3484,164 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* ========================================================
+            PAGE: FAQ MANAGEMENT (ADD, EDIT, DELETE FAQS)
+           ======================================================== */}
+        {activeTab === 'faqs' && (
+          <div className="space-y-8 max-w-5xl">
+            {/* Header */}
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-2xs">
+                  <HelpCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+                    Frequently Asked Questions (FAQ) Management
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    Add, edit, or remove questions and answers shown in the Homepage FAQ accordion.
+                  </p>
+                </div>
+              </div>
+
+              {!editingFaqId && (
+                <button
+                  onClick={() => {
+                    handleOpenAddFaq();
+                    window.scrollTo({ top: 300, behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-md shrink-0"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  <span>+ Add New FAQ</span>
+                </button>
+              )}
+            </div>
+
+            {/* Direct Form: Add / Edit FAQ */}
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-5 shadow-sm">
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4 text-emerald-600" />
+                  <span>{editingFaqId ? 'Edit FAQ Item' : 'Add New FAQ Item'}</span>
+                </h3>
+                {editingFaqId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingFaqId(null);
+                      setFaqQuestion('');
+                      setFaqAnswer('');
+                    }}
+                    className="text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition"
+                  >
+                    Cancel Editing
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveFaq} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
+                    Question *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. HOW DOES SOLAR ENERGY & HYBRID INVERTER WORK?"
+                    value={faqQuestion}
+                    onChange={e => setFaqQuestion(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-700 mb-1">
+                    Answer / Detailed Explanation *
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Enter the complete answer to this question..."
+                    value={faqAnswer}
+                    onChange={e => setFaqAnswer(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed"
+                  />
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition"
+                  >
+                    {editingFaqId ? 'Update FAQ' : 'Save FAQ'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Existing FAQs Table */}
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-x-auto shadow-sm">
+              <table className="w-full min-w-[640px] text-left text-xs">
+                <thead>
+                  <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-500 uppercase text-[10px] font-bold">
+                    <th className="py-3.5 px-5 w-12">#</th>
+                    <th className="py-3.5 px-5">Question</th>
+                    <th className="py-3.5 px-5">Answer</th>
+                    <th className="py-3.5 px-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {faqs.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-slate-400">
+                        No FAQs added yet. Fill the form above to add one.
+                      </td>
+                    </tr>
+                  ) : (
+                    faqs.map((f, idx) => (
+                      <tr key={f.id || f._id || idx} className="hover:bg-slate-50/80 transition">
+                        <td className="py-3 px-5 font-bold text-slate-400">
+                          {idx + 1}
+                        </td>
+                        <td className="py-3 px-5 max-w-xs">
+                          <span className="font-bold text-slate-900 text-xs block leading-snug">
+                            {f.question}
+                          </span>
+                        </td>
+                        <td className="py-3 px-5 max-w-md">
+                          <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed">
+                            {f.answer}
+                          </p>
+                        </td>
+                        <td className="py-3 px-5 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => handleOpenEditFaq(f)}
+                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                              title="Edit FAQ"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteFaq(f.id || f._id)}
+                              className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                              title="Delete FAQ"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

@@ -198,28 +198,38 @@ export default function ProductsCatalogClient({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* ========================================================
-              LEFT SIDEBAR: CATEGORY ACCORDIONS (lg:col-span-3)
+              LEFT SIDEBAR: AUTHENTIC INDUSTRIAL CATALOG NAVIGATION (lg:col-span-3)
              ======================================================== */}
-          <aside className={`lg:col-span-3 lg:block ${mobileFilterOpen ? 'block' : 'hidden'} space-y-4`}>
+          <aside className={`lg:col-span-3 lg:block ${mobileFilterOpen ? 'block' : 'hidden'} space-y-5`}>
             
-            {/* Search Input Box */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
-                Quick Search
-              </span>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            {/* Quick Search Card (Modern Minimalist Form) */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                  Quick Search
+                </span>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                    className="text-[10px] font-bold text-rose-600 hover:underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search catalog or specs..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:bg-white transition"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -227,43 +237,49 @@ export default function ProductsCatalogClient({
               </div>
             </div>
 
-            {/* All Products & Categories Tree */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-                <div className="flex items-center gap-2">
-                  <FolderTree className="w-4 h-4 text-emerald-600" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
-                    Product Categories
-                  </span>
-                </div>
+            {/* Product Divisions & Categories Tree (Industrial Specification Style) */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+              
+              {/* Header */}
+              <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800">
+                  Product Divisions
+                </span>
                 {(selectedCategory || selectedSubCategory || selectedSubSubCategory || searchQuery) && (
                   <button
                     onClick={handleSelectAll}
-                    className="text-[11px] font-semibold text-rose-600 hover:underline"
+                    className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 transition"
                   >
-                    Reset
+                    Reset Filter
                   </button>
                 )}
               </div>
 
-              {/* All Products Button */}
-              <button
-                type="button"
-                onClick={handleSelectAll}
-                className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold border-b border-slate-100 transition text-left ${
-                  !selectedCategory 
-                    ? 'bg-emerald-50 text-emerald-900 font-extrabold border-l-4 border-l-emerald-600' 
-                    : 'text-slate-700 hover:bg-slate-50'
-                }`}
-              >
-                <span>All Products</span>
-                <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">
-                  {initialProducts.length}
-                </span>
-              </button>
+              {/* All Products Item */}
+              <div className="p-2 border-b border-slate-100">
+                <button
+                  type="button"
+                  onClick={handleSelectAll}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition text-left ${
+                    !selectedCategory 
+                      ? 'bg-slate-900 text-white shadow-xs' 
+                      : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${!selectedCategory ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+                    <span>All Product Lines</span>
+                  </span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                    !selectedCategory ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {initialProducts.length}
+                  </span>
+                </button>
+              </div>
 
-              {/* Main Categories List */}
-              <div className="divide-y divide-slate-100">
+              {/* Main Categories Navigation */}
+              <div className="p-2 space-y-1">
                 {categories.map((cat) => {
                   const cId = cat.id || cat.slug;
                   const isCatActive = (selectedCategory.toLowerCase() === (cat.slug || cat.name).toLowerCase()) || (selectedCategory === cId);
@@ -271,13 +287,13 @@ export default function ProductsCatalogClient({
                   const subs = cat.subCategoriesList || [];
 
                   return (
-                    <div key={cId} className="transition">
+                    <div key={cId} className="rounded-xl overflow-hidden transition">
                       
                       {/* Main Category Row */}
                       <div
-                        className={`flex items-center justify-between px-3.5 py-3 transition ${
+                        className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl transition ${
                           isCatActive 
-                            ? 'bg-emerald-50/80 text-emerald-900 border-l-4 border-l-emerald-600 font-bold' 
+                            ? 'bg-emerald-50 text-emerald-900 font-bold border border-emerald-200/80 shadow-2xs' 
                             : 'hover:bg-slate-50 text-slate-800'
                         }`}
                       >
@@ -285,9 +301,11 @@ export default function ProductsCatalogClient({
                         <button
                           type="button"
                           onClick={() => handleSelectCategory(cat)}
-                          className="flex-1 text-left text-xs font-semibold hover:text-emerald-700 flex items-center truncate pr-2"
+                          className="flex-1 text-left text-xs font-semibold hover:text-emerald-700 flex items-center truncate pr-2 group"
                         >
-                          <span className="truncate">{cat.name}</span>
+                          <span className="truncate group-hover:translate-x-0.5 transition-transform">
+                            {cat.name}
+                          </span>
                         </button>
 
                         {/* Expand / Collapse Button if Subs exist */}
@@ -295,17 +313,17 @@ export default function ProductsCatalogClient({
                           <button
                             type="button"
                             onClick={() => toggleCategory(cId)}
-                            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition shrink-0"
+                            className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition shrink-0 ml-1"
                             title={isExpanded ? 'Collapse' : 'Expand'}
                           >
-                            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-emerald-600' : ''}`} />
+                            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-emerald-700' : ''}`} />
                           </button>
                         )}
                       </div>
 
                       {/* Sub-Categories (Level 2) Accordion Content */}
                       {isExpanded && subs.length > 0 && (
-                        <div className="pl-6 pr-3 py-1.5 bg-slate-50/60 border-t border-slate-100 space-y-1">
+                        <div className="pl-4 pr-2 py-1.5 ml-3 my-1 border-l-2 border-slate-200 space-y-1">
                           {subs.map((sub) => {
                             const isSubActive = selectedSubCategory.toLowerCase() === sub.name.toLowerCase();
                             const subSubs = sub.subSubCategories || [];
@@ -313,14 +331,14 @@ export default function ProductsCatalogClient({
 
                             return (
                               <div key={sub.id} className="py-0.5">
-                                <div className="flex items-center justify-between py-1">
+                                <div className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-slate-50">
                                   <button
                                     type="button"
                                     onClick={() => handleSelectSub(sub.name, sub.id)}
-                                    className={`flex-1 text-left text-[11px] transition flex items-center truncate ${
+                                    className={`flex-1 text-left text-[11px] transition truncate ${
                                       isSubActive 
                                         ? 'text-emerald-700 font-bold' 
-                                        : 'text-slate-600 hover:text-emerald-600'
+                                        : 'text-slate-600 hover:text-slate-900'
                                     }`}
                                   >
                                     <span className="truncate">{sub.name}</span>
@@ -330,7 +348,7 @@ export default function ProductsCatalogClient({
                                     <button
                                       type="button"
                                       onClick={() => toggleSub(sub.id)}
-                                      className="p-0.5 text-slate-400 hover:text-slate-600"
+                                      className="p-0.5 text-slate-400 hover:text-slate-600 ml-1"
                                     >
                                       <ChevronDown className={`w-3 h-3 transition-transform ${isSubExpanded ? 'rotate-180 text-emerald-600' : ''}`} />
                                     </button>
@@ -339,7 +357,7 @@ export default function ProductsCatalogClient({
 
                                 {/* Sub-Sub-Categories (Level 3) */}
                                 {isSubExpanded && subSubs.length > 0 && (
-                                  <div className="pl-4 pr-1 py-1 space-y-1 border-l border-emerald-200 ml-1">
+                                  <div className="pl-3 py-1 space-y-1 border-l border-slate-200 ml-2 mt-0.5">
                                     {subSubs.map((subSub) => {
                                       const isSubSubActive = selectedSubSubCategory.toLowerCase() === subSub.name.toLowerCase();
                                       return (
@@ -347,13 +365,13 @@ export default function ProductsCatalogClient({
                                           key={subSub.id}
                                           type="button"
                                           onClick={() => handleSelectSubSub(subSub.name)}
-                                          className={`block w-full text-left text-[10px] py-1 truncate transition ${
-                                            isSubSubActive 
-                                              ? 'text-emerald-800 font-bold underline' 
-                                              : 'text-slate-500 hover:text-slate-800'
+                                          className={`block w-full text-left text-[10px] py-1 px-2 rounded transition truncate ${
+                                            isSubSubActive
+                                              ? 'bg-emerald-100/70 text-emerald-900 font-bold'
+                                              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/60'
                                           }`}
                                         >
-                                          {subSub.name}
+                                          • {subSub.name}
                                         </button>
                                       );
                                     })}
@@ -364,7 +382,6 @@ export default function ProductsCatalogClient({
                           })}
                         </div>
                       )}
-
                     </div>
                   );
                 })}

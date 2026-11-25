@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 import { submitInquiry } from '@/lib/api';
 
 const DEFAULT_CONTACT_INFO = {
@@ -16,7 +16,6 @@ export default function ContactPage() {
   const [contactInfo, setContactInfo] = useState(DEFAULT_CONTACT_INFO);
 
   useEffect(() => {
-    // Read custom contact info if modified in localStorage
     try {
       const saved = localStorage.getItem('ats_custom_contact_info');
       if (saved) {
@@ -52,7 +51,6 @@ export default function ContactPage() {
     try {
       await submitInquiry(formData);
       
-      // Also persist to localStorage for instant client dashboard display
       const newInquiry = {
         _id: 'inq_' + Date.now(),
         name: formData.name,
@@ -88,196 +86,248 @@ export default function ContactPage() {
   const encodedMapAddress = encodeURIComponent(contactInfo.address);
 
   return (
-    <div className="bg-slate-50 min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="mb-10 text-center max-w-2xl mx-auto">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">
-            Connect With ATS Energy
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Contact & Corporate Inquiries
-          </h1>
-          <p className="text-sm text-slate-600 mt-2">
-            Reach out for institutional quotations, dealer partnerships, and technical product inquiries.
-          </p>
+    <div className="bg-[#FAFBFB] min-h-screen font-sans">
+      
+      {/* ========================================================
+          1. SUNCOR EXACT BREADCRUMB SECTION (breadcrumb-wrapper bg-color1)
+         ======================================================== */}
+      <section className="relative bg-[#053F33] overflow-hidden">
+        {/* Soft Decorative Ambient Background */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="pt-24 pb-20 sm:pt-36 sm:pb-28 flex flex-col md:flex-row items-center justify-between gap-6 relative">
+            
+            {/* Title & Path */}
+            <div className="text-left space-y-2.5 z-10 max-w-xl">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight">
+                Contact
+              </h1>
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-300">
+                <Link href="/" className="hover:text-emerald-400 transition">Home</Link>
+                <span>/</span>
+                <span className="text-[#6F9700] font-semibold">Contact</span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300/90 font-normal pt-1 leading-relaxed">
+                Reach out for institutional quotations, dealer partnerships, and certified electrical engineering solutions.
+              </p>
+            </div>
+
+            {/* Suncor Breadcrumb Solar/Wind Turbine Illustrated Thumb */}
+            <div className="shrink-0 z-10 max-w-[280px] sm:max-w-[340px] md:max-w-[380px]">
+              <img
+                src="/assets/images/intro/breadcrumb-thumb.png"
+                alt="Suncor Renewable Energy"
+                className="w-full h-auto drop-shadow-xl"
+              />
+            </div>
+
+          </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left: Contact Info & Address */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-slate-950 text-white rounded-3xl p-8 border border-slate-800 shadow-xl space-y-6">
-              <h3 className="text-xl font-bold tracking-tight">Headquarters & Factory Office</h3>
-              
-              <ul className="space-y-4 text-sm text-slate-300">
-                <li className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>{contactInfo.address}</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span>{contactInfo.phone}</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span>{contactInfo.email}</span>
-                </li>
-              </ul>
-
-              <div className="pt-4 border-t border-slate-800">
-                <span className="text-xs font-semibold text-slate-400 block mb-1">Business Hours:</span>
-                <p className="text-sm font-medium text-white">{contactInfo.hours}</p>
+      {/* ========================================================
+          2. SUNCOR TOP CONTACT INFO CARDS (Email & Mobile Side-by-Side)
+         ======================================================== */}
+      <section className="pt-10 sm:pt-14 pb-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* E-mail Card */}
+            <div className="bg-white rounded-[20px] p-6 sm:p-7 flex items-center gap-5 shadow-[0px_4.4px_20px_-1px_rgba(19,16,34,0.06)] border border-slate-100/80 hover:shadow-lg transition-all duration-300">
+              <div className="w-[55px] h-[55px] rounded-full bg-[#F2F9EB] flex items-center justify-center shrink-0">
+                <img 
+                  src="/assets/images/icon/mail-icon.svg" 
+                  alt="E-mail" 
+                  className="w-6 h-6"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="text-slate-500 text-sm font-light mb-1">E-mail</p>
+                <a 
+                  href={`mailto:${contactInfo.email}`}
+                  className="text-[#053F33] text-base sm:text-lg font-bold hover:text-[#6F9700] transition block truncate"
+                >
+                  {contactInfo.email}
+                </a>
               </div>
             </div>
 
-            {/* Direct Assistance Card */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-3">
-              <h4 className="text-sm font-bold text-slate-900">Institutional / Wholesale Sales</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Direct hotline for urgent commercial purchase inquiries:
-              </p>
-              <a
-                href={`tel:${contactInfo.hotline.replace(/\s+/g, '')}`}
-                className="inline-block text-sm font-bold text-emerald-600 hover:text-emerald-700"
-              >
-                📞 {contactInfo.hotline}
-              </a>
-            </div>
-          </div>
-
-          {/* Right: Interactive Inquiry Form */}
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/80 shadow-sm p-8 sm:p-10">
-            {submitted ? (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-bold text-slate-900">Thank You!</h3>
-                <p className="text-sm text-slate-600 max-w-md mx-auto">
-                  Your inquiry has been logged into the ATS Energy CRM. A sales engineer will contact you shortly.
-                </p>
-                <button
-                  onClick={() => setSubmitted(false)}
-                  className="mt-4 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold"
-                >
-                  Submit Another Inquiry
-                </button>
+            {/* Mobile Card */}
+            <div className="bg-white rounded-[20px] p-6 sm:p-7 flex items-center gap-5 shadow-[0px_4.4px_20px_-1px_rgba(19,16,34,0.06)] border border-slate-100/80 hover:shadow-lg transition-all duration-300">
+              <div className="w-[55px] h-[55px] rounded-full bg-[#F2F9EB] flex items-center justify-center shrink-0">
+                <img 
+                  src="/assets/images/icon/call-icon.svg" 
+                  alt="Call" 
+                  className="w-6 h-6"
+                />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Request an Official Quotation</h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Engr. Tanvir Ahmed"
-                      value={formData.name}
-                      onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address *</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="tanvir@example.com"
-                      value={formData.email}
-                      onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="017XXXXXXXX"
-                      value={formData.phone}
-                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Company / Project Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Apex Engineering Ltd"
-                      value={formData.company}
-                      onChange={e => setFormData({ ...formData, company: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Message / Quantity Details *</label>
-                  <textarea
-                    required
-                    rows={4}
-                    placeholder="Please mention required volume, delivery timeline, or project specifications..."
-                    value={formData.message}
-                    onChange={e => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-md shadow-emerald-500/20 text-sm flex items-center justify-center gap-2"
+              <div className="min-w-0">
+                <p className="text-slate-500 text-sm font-light mb-1">Mobile</p>
+                <a 
+                  href={`tel:${contactInfo.hotline.replace(/\s+/g, '')}`}
+                  className="text-[#053F33] text-base sm:text-lg font-bold hover:text-[#6F9700] transition block"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>{submitting ? 'Sending Request...' : 'Submit Quotation Request'}</span>
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-
-        {/* Full-Width Google Map Section (Directly below Contact Details & Inquiry Form) */}
-        <div className="mt-12 w-full bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-2">
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-emerald-600 shrink-0" />
-                <span>Live Office & Factory Location Map</span>
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {contactInfo.address}
-              </p>
+                  {contactInfo.hotline}
+                </a>
+              </div>
             </div>
-            <a 
-              href={`https://maps.google.com/?q=${encodedMapAddress}`}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-xs font-bold rounded-xl transition border border-slate-200 hover:border-emerald-200 shrink-0 shadow-xs"
-            >
-              <span>Open in Google Maps</span>
-              <span>↗</span>
-            </a>
-          </div>
 
-          {/* Full-width Responsive Map Frame with generous height */}
-          <div className="w-full h-80 sm:h-[420px] rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
-            <iframe
-              title="ATS Energy Location Map"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://maps.google.com/maps?q=${encodedMapAddress}&t=&z=16&ie=UTF8&iwloc=&output=embed`}
-            />
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* ========================================================
+          3. ADDRESS CARD & GET IN TOUCH FORM SIDE-BY-SIDE (50% Overlapping Map)
+         ======================================================== */}
+      <section className="relative z-20 pointer-events-none pt-5 pb-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-[-180px] sm:mb-[-200px]">
+            
+            {/* Left: Address Card (Directly below Email with tight gap) */}
+            <div className="lg:col-span-6 bg-white rounded-[20px] p-6 sm:p-7 flex items-center gap-5 shadow-[0px_4.4px_20px_-1px_rgba(19,16,34,0.06)] border border-slate-100/80 hover:shadow-lg transition-all duration-300 pointer-events-auto">
+              <div className="w-[55px] h-[55px] rounded-full bg-[#F2F9EB] flex items-center justify-center shrink-0">
+                <img 
+                  src="/assets/images/icon/location-icon.svg" 
+                  alt="Location" 
+                  className="w-6 h-6"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="text-slate-500 text-sm font-light mb-1">Address</p>
+                <h4 className="text-[#053F33] text-base sm:text-lg font-bold leading-snug">
+                  {contactInfo.address}
+                </h4>
+              </div>
+            </div>
+
+            {/* Right: The Compact White Floating Form (50% Over Map) */}
+            <div className="lg:col-span-6 bg-white rounded-[24px] border border-slate-200/90 shadow-[0px_10px_50px_rgba(0,0,0,0.12)] p-6 sm:p-8 pointer-events-auto relative z-20">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#053F33] mb-6 capitalize tracking-tight">
+                Get In Touch
+              </h2>
+
+              {submitted ? (
+                <div className="text-center py-8 space-y-4">
+                  <div className="w-14 h-14 bg-[#F2F9EB] text-[#053F33] rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+                    ✓
+                  </div>
+                  <h3 className="text-xl font-bold text-[#053F33]">Thank You!</h3>
+                  <p className="text-xs text-slate-600 max-w-xs mx-auto leading-relaxed">
+                    Your message has been received. Our team will contact you shortly.
+                  </p>
+                  <button
+                    onClick={() => setSubmitted(false)}
+                    className="mt-3 px-6 py-2.5 bg-[#053F33] text-white rounded-full font-medium text-xs hover:bg-[#032b23] transition"
+                  >
+                    Send Another Message
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  
+                  {/* Row 1: Name & Email */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Your Name"
+                        value={formData.name}
+                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full px-5 py-2.5 rounded-full border border-slate-200 text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#6F9700] transition"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        required
+                        placeholder="Your Email"
+                        value={formData.email}
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full px-5 py-2.5 rounded-full border border-slate-200 text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#6F9700] transition"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 2: Phone & Company */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Phone Number"
+                        value={formData.phone}
+                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-5 py-2.5 rounded-full border border-slate-200 text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#6F9700] transition"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Company (Optional)"
+                        value={formData.company}
+                        onChange={e => setFormData({ ...formData, company: e.target.value })}
+                        className="w-full px-5 py-2.5 rounded-full border border-slate-200 text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#6F9700] transition"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Message textarea */}
+                  <div>
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder="Message here.."
+                      value={formData.message}
+                      onChange={e => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full px-5 py-3 rounded-2xl border border-slate-200 text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#6F9700] transition resize-none"
+                    />
+                  </div>
+
+                  {/* Suncor Sent Now Button with white-arrow.svg (#053F33) */}
+                  <div className="pt-1">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#053F33] hover:bg-[#032b23] text-white text-sm font-semibold transition duration-300 shadow-md cursor-pointer"
+                    >
+                      <span>{submitting ? 'Sending...' : 'Sent Now'}</span>
+                      <img
+                        src="/assets/images/icon/white-arrow.svg"
+                        alt="arrow"
+                        className="w-3.5 h-3.5"
+                      />
+                    </button>
+                  </div>
+
+                </form>
+              )}
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          4. INTERACTIVE FULL-WIDTH GOOGLE MAP (Accessible & Accurate)
+         ======================================================== */}
+      <section className="w-full relative z-0">
+        <div className="w-full h-[520px] sm:h-[600px] relative">
+          <iframe
+            title="ATS Energy Official Location Map"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            src="https://maps.google.com/maps?q=Sonali+Neer,+Bosila+Road,+Mohammadpur,+Dhaka-1207,+Bangladesh&t=&z=15&ie=UTF8&iwloc=&output=embed"
+          />
+        </div>
+      </section>
+
     </div>
   );
 }

@@ -60,7 +60,16 @@ export interface ServiceItem {
   title: string;
   description: string;
   image: string;
+  secondaryImage?: string;
   link?: string;
+}
+
+export interface FAQItem {
+  id?: string;
+  _id?: string;
+  question: string;
+  answer: string;
+  order?: number;
 }
 
 export interface Inquiry {

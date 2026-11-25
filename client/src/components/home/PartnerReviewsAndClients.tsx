@@ -52,9 +52,6 @@ export default function PartnerReviewsAndClients() {
             PART 1: WHAT OUR PARTNERS SAY (TESTIMONIALS)
            ======================================================== */}
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-2">
-            Feedback & Testimonials
-          </span>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             What Our Partners Say
           </h2>

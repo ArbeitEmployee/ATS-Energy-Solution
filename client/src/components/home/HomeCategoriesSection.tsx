@@ -45,9 +45,6 @@ export default function HomeCategoriesSection({ initialCategories }: HomeCategor
         
         {/* Section Heading (View All Products removed as requested) */}
         <div className="mb-8">
-          <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1.5">
-            ATS Product Categories
-          </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Our Main Categories
           </h2>

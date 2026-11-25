@@ -48,31 +48,68 @@ export default function AboutPage() {
     <div className="bg-slate-50 min-h-screen">
       
       {/* ========================================================
-          1. HERO HEADER: Corporate Breadcrumb & Title Banner
+          1. HERO HEADER: Suncor Deep Green & Electric Bulb Concept Banner
          ======================================================== */}
-      <section className="relative bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white pt-14 pb-24 overflow-hidden border-b border-slate-800">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative bg-[#053F33] overflow-hidden">
+        {/* Soft Decorative Ambient Background Glows matching bulb energy */}
+        <div className="absolute top-0 right-1/4 w-[450px] h-[450px] bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-10 w-96 h-96 bg-[#86B817]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-0 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Subtle patterned background grid accent for technical electric feel */}
+        <div 
+          className="absolute inset-0 opacity-[0.035] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)`,
+            backgroundSize: '28px 28px'
+          }}
+        />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
-          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 uppercase tracking-widest mb-4">
-            <Link href="/" className="hover:text-white transition">Home</Link>
-            <span className="text-slate-500">/</span>
-            <span className="text-white">About ATS Energy Solutions</span>
-          </div>
+          <div className="pt-20 pb-20 sm:pt-24 sm:pb-24 flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12">
+            
+            {/* Left Content Column */}
+            <div className="text-left space-y-4 max-w-2xl z-10">
+              {/* Breadcrumb matching Suncor identity */}
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-300">
+                <Link href="/" className="hover:text-emerald-300 transition">Home</Link>
+                <span className="text-emerald-200/50">/</span>
+                <span className="text-[#86B817] font-semibold">About Us</span>
+              </div>
 
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{about.tagline || 'Engineered For Bangladesh'}</span>
+              {/* Tagline Badge with Electric Energy Icon */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-[#86B817]" />
+                <span>{about.tagline || 'Who we are >'}</span>
+              </div>
+
+              {/* Main Heading */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.18]">
+                Pioneering Certified Electrical &amp; Solar Solutions
+              </h1>
+
+              {/* Subtitle / Description */}
+              <p className="text-xs sm:text-sm md:text-base text-slate-200/90 leading-relaxed max-w-xl font-normal">
+                From precision switchgear to heavy-gauge pure copper cables and commercial solar arrays, discover the corporate vision powering modern infrastructure across Bangladesh.
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
-              Pioneering Certified Electrical &amp; Solar Solutions
-            </h1>
-            <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-              From precision switchgear to heavy-gauge pure copper cables and commercial solar arrays, discover the corporate vision powering modern infrastructure across Bangladesh.
-            </p>
+
+            {/* Right Distinctive Electric Bulb Concept Illustration (Seamlessly Integrated, No Box Borders) */}
+            <div className="shrink-0 z-10 w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] flex justify-center md:justify-end">
+              <div className="relative group">
+                {/* Radial energy halo directly centered on the bulb element */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-[#86B817]/20 rounded-full blur-3xl transform scale-125 pointer-events-none group-hover:scale-135 transition-all duration-700" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-amber-400/20 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-400/30 transition-all duration-500" />
+                
+                {/* Clean cutout graphic - 100% transparent edges, no square box or seam visible */}
+                <img
+                  src="/assets/images/intro/about-bulb-clean.png"
+                  alt="ATS Energy Innovation & Electrical Power"
+                  className="relative w-full h-auto block select-none pointer-events-none group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -80,63 +117,63 @@ export default function AboutPage() {
       {/* ========================================================
           2. CORPORATE STATS COUNTER STRIP (Overlapping Hero Banner)
          ======================================================== */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 -mt-12 relative z-20">
-        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200/80 p-6 sm:p-8 grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 -mt-8 sm:-mt-12 relative z-20">
+        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200/80 p-4 sm:p-8 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 md:divide-x divide-slate-100">
           {/* Happy Customers */}
-          <div className="flex items-center gap-4 pt-4 md:pt-0 md:px-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
-              <Users className="w-6 h-6" />
+          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-2 md:px-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight block">
+              <span className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight block">
                 {about.statHappyCustomers}
               </span>
-              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              <span className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-wider block">
                 Happy Customers
               </span>
             </div>
           </div>
 
           {/* Successful Projects */}
-          <div className="flex items-center gap-4 pt-4 md:pt-0 md:px-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
-              <FolderCheck className="w-6 h-6" />
+          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-2 md:px-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <FolderCheck className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight block">
+              <span className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight block">
                 {about.statSuccessfulProjects}
               </span>
-              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              <span className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-wider block">
                 Projects Completed
               </span>
             </div>
           </div>
 
           {/* Dealers & Partners */}
-          <div className="flex items-center gap-4 pt-4 md:pt-0 md:px-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
-              <Handshake className="w-6 h-6" />
+          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-2 md:px-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <Handshake className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight block">
+              <span className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight block">
                 {about.statDealersPartners}
               </span>
-              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              <span className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-wider block">
                 Dealers Nationwide
               </span>
             </div>
           </div>
 
           {/* 24h Customer Support */}
-          <div className="flex items-center gap-4 pt-4 md:pt-0 md:px-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
-              <Clock className="w-6 h-6" />
+          <div className="flex items-center gap-3 sm:gap-4 pt-3 sm:pt-0 sm:px-2 md:px-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight block">
+              <span className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight block">
                 {about.statCustomerSupport}
               </span>
-              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider">
+              <span className="text-[10px] sm:text-xs text-slate-500 font-bold uppercase tracking-wider block">
                 Dedicated Support
               </span>
             </div>
@@ -217,99 +254,111 @@ export default function AboutPage() {
         </section>
 
         {/* ========================================================
-            4. VISION & MISSION: Modern Split Editorial Showcase
+            4. VISION & MISSION: Authentic Corporate Manifesto Layout (No Dark Tech Card)
            ======================================================== */}
-        <section className="relative rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-8 sm:p-14 overflow-hidden border border-slate-800 shadow-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-stretch divide-y md:divide-y-0 md:divide-x divide-slate-800">
-            {/* Vision */}
-            <div className="space-y-4 md:pr-8">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                <Compass className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-400 block">
-                Forward Horizon
+        <section className="py-6 sm:py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+            
+            {/* Vision Column */}
+            <div className="space-y-4 border-l-4 border-emerald-600 pl-6 sm:pl-8 py-2">
+              <span className="text-xs font-black uppercase tracking-widest text-emerald-700 block">
+                Strategic Vision
               </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                {about.visionTitle}
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {about.visionTitle || "Our Vision"}
               </h3>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed italic">
-                &ldquo;{about.visionText}&rdquo;
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                {about.visionText}
               </p>
             </div>
 
-            {/* Mission */}
-            <div className="space-y-4 pt-8 md:pt-0 md:pl-10">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                <Target className="w-6 h-6" />
-              </div>
-              <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-400 block">
-                Daily Commitment
+            {/* Mission Column */}
+            <div className="space-y-4 border-l-4 border-slate-900 pl-6 sm:pl-8 py-2">
+              <span className="text-xs font-black uppercase tracking-widest text-slate-600 block">
+                Corporate Mission
               </span>
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                {about.missionTitle}
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {about.missionTitle || "Our Mission"}
               </h3>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed italic">
-                &ldquo;{about.missionText}&rdquo;
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                {about.missionText}
               </p>
             </div>
+
           </div>
         </section>
 
         {/* ========================================================
-            5. WHY WE'RE THE RIGHT CHOICE: Clean High-Trust Feature Blocks
+            5. WHY WE'RE THE RIGHT CHOICE: Industrial Engineering Benchmarks (Card-less Corporate Editorial)
            ======================================================== */}
-        <section className="space-y-10">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-xs font-black uppercase tracking-widest text-emerald-600 block">
-              {about.rightChoiceSubtitle || "WHY WE'RE"}
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-              {about.rightChoiceTitle || "THE RIGHT CHOICE"}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Built on certified manufacturing standards, dependable delivery timelines, and nationwide distributor support.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Choice 1 */}
-            <div className="bg-white p-8 rounded-2xl border-t-4 border-t-emerald-600 border border-slate-200/90 shadow-sm hover:shadow-lg transition duration-300 group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
-                <Handshake className="w-6 h-6" />
+        <section className="py-8 sm:py-12 border-t border-b border-slate-200/90">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+            
+            {/* Left Header & Institutional Credibility Statement */}
+            <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[11px] font-black uppercase tracking-widest">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{about.rightChoiceSubtitle || "WHY WE'RE"}</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                Dealer &amp; Wholesale Support
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Special pricing, guaranteed warehouse inventory allocations, and marketing support for dealers, contractors, and retailers across 64 districts.
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                {about.rightChoiceTitle || "THE RIGHT CHOICE"}
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                Built on certified manufacturing standards, dependable delivery timelines, and nationwide distributor support across all 64 districts of Bangladesh.
               </p>
+
+              {/* Verified Trust Metric Pointers */}
+              <div className="pt-4 space-y-3 border-t border-slate-200/80">
+                <div className="flex items-center gap-2.5 text-xs font-bold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>100% Electrolytic Pure Copper Testing</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs font-bold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>BDS &amp; BSTI Aligned Engineering Specs</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs font-bold text-slate-800">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Direct Factory Warranty &amp; Logistics</span>
+                </div>
+              </div>
             </div>
 
-            {/* Choice 2 */}
-            <div className="bg-white p-8 rounded-2xl border-t-4 border-t-emerald-600 border border-slate-200/90 shadow-sm hover:shadow-lg transition duration-300 group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
-                <Users className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                Electrical Project Support
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Complete engineering support for commercial infrastructure, residential high-rises, factories, switchboards, and solar project requirements.
-              </p>
+            {/* Right Column: 3 Pillars Displayed in Modern Linear Architectural Format (No Cards) */}
+            <div className="lg:col-span-8 divide-y divide-slate-200">
+              {(about.rightChoiceCards || fallbackAboutContent.rightChoiceCards || []).map((card, idx) => {
+                const getIcon = () => {
+                  if (card.icon === 'handshake' || idx === 0) return <Handshake className="w-5 h-5 text-emerald-700" />;
+                  if (card.icon === 'users' || idx === 1) return <Users className="w-5 h-5 text-emerald-700" />;
+                  return <Sun className="w-5 h-5 text-emerald-700" />;
+                };
+
+                return (
+                  <div 
+                    key={card.id || idx} 
+                    className={`py-6 sm:py-8 ${idx === 0 ? 'pt-0' : ''} group`}
+                  >
+                    <div className="flex items-start gap-4 sm:gap-5">
+                      {/* Icon Marker */}
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-emerald-50 border border-slate-200 group-hover:border-emerald-200 flex items-center justify-center shrink-0 transition duration-300">
+                        {getIcon()}
+                      </div>
+
+                      {/* Content details */}
+                      <div className="space-y-1.5 min-w-0 flex-1">
+                        <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight group-hover:text-emerald-700 transition duration-300">
+                          {card.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                          {card.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Choice 3 */}
-            <div className="bg-white p-8 rounded-2xl border-t-4 border-t-emerald-600 border border-slate-200/90 shadow-sm hover:shadow-lg transition duration-300 group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
-                <Sun className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                Solar Consultation
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Professional consultation for rooftop solar installations, auto charge controllers (10A to 30A), monocrystalline panels, and energy-saving designs.
-              </p>
-            </div>
           </div>
         </section>
 
