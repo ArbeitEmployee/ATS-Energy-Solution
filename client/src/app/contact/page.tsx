@@ -49,23 +49,26 @@ export default function ContactPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await submitInquiry(formData);
+      const res = await submitInquiry(formData);
       
-      const newInquiry = {
-        _id: 'inq_' + Date.now(),
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
-        productOfInterest: formData.productOfInterest || 'General Contact Inquiry',
-        message: formData.message,
-        status: 'new',
-        createdAt: new Date().toISOString()
-      };
-      const existing = localStorage.getItem('ats_custom_inquiries');
-      const list = existing ? JSON.parse(existing) : [];
-      list.unshift(newInquiry);
-      localStorage.setItem('ats_custom_inquiries', JSON.stringify(list));
+      // Only store to localStorage if backend API was offline or returned non-server fallback
+      if (!res || !res.success) {
+        const newInquiry = {
+          _id: 'inq_' + Date.now(),
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          productOfInterest: formData.productOfInterest || 'General Contact Inquiry',
+          message: formData.message,
+          status: 'new',
+          createdAt: new Date().toISOString()
+        };
+        const existing = localStorage.getItem('ats_custom_inquiries');
+        const list = existing ? JSON.parse(existing) : [];
+        list.unshift(newInquiry);
+        localStorage.setItem('ats_custom_inquiries', JSON.stringify(list));
+      }
 
       setSubmitted(true);
       setFormData({

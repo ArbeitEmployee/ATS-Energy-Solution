@@ -178,6 +178,15 @@ export const updateInquiryStatus = async (id: string, status: string) => {
   }
 };
 
+export const deleteInquiry = async (id: string) => {
+  try {
+    const res = await api.delete(`/inquiries/${id}`);
+    return res.data;
+  } catch (err: any) {
+    return { success: false };
+  }
+};
+
 function filterFallbackProducts(params?: { category?: string; search?: string; featured?: boolean }): Product[] {
   let list = [...fallbackProducts];
   if (params?.category) {

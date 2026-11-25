@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { Product, Attribute, Banner, Category, SubCategory, SubSubCategory, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, LegalContent, PopupSettings, Inquiry, FAQItem } from '@/types';
 import { fallbackProducts, initialBanners, fallbackCategories, fallbackServices, fallbackPartnerReviews, fallbackKeyClients, fallbackAboutContent, fallbackSocialMedia, fallbackSEO, fallbackLegalContent, fallbackPopupSettings, fallbackFAQs, atsOfficialLogo } from '@/lib/data';
-import { getInquiries, updateInquiryStatus } from '@/lib/api';
+import { getInquiries, updateInquiryStatus, deleteInquiry } from '@/lib/api';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
@@ -187,11 +187,17 @@ export default function AdminDashboardPage() {
       if (local) {
         const parsed = JSON.parse(local);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge unique by phone/name or id
+          // Merge unique checking:
+          // 1. By ID (if identical)
+          // 2. By content deduplication: (phone, name, message) to prevent local client duplicate with server DB record
           const existingIds = new Set(loaded.map(i => i._id || i.id));
           parsed.forEach((item: Inquiry) => {
             const id = item._id || item.id;
-            if (!existingIds.has(id)) {
+            const isDuplicateContent = loaded.some(i => 
+              (i.phone && item.phone && i.phone === item.phone && i.name === item.name && (i.message === item.message || i.productOfInterest === item.productOfInterest))
+            );
+
+            if (!existingIds.has(id) && !isDuplicateContent) {
               loaded.unshift(item);
               existingIds.add(id);
             }
@@ -220,8 +226,16 @@ export default function AdminDashboardPage() {
     } catch (e) {}
   };
 
-  const handleDeleteInquiry = (id: string) => {
+  const handleDeleteInquiry = async (id: string) => {
     if (confirm('Are you sure you want to remove this inquiry?')) {
+      // 1. Delete from Server MongoDB API
+      try {
+        await deleteInquiry(id);
+      } catch (e) {
+        console.error(e);
+      }
+
+      // 2. Delete from Local State & LocalStorage
       const updated = inquiries.filter(inq => inq._id !== id && inq.id !== id);
       setInquiries(updated);
       try {

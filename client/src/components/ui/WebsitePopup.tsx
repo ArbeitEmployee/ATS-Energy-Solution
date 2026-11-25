@@ -86,22 +86,35 @@ export default function WebsitePopup() {
 
     try {
       // 1. Submit to Backend MongoDB API
-      await submitInquiry(payload);
+      const res = await submitInquiry(payload);
 
-      // 2. Also save to localStorage for instant client dashboard display
+      // 2. Only save to localStorage as backup if server API is offline
+      if (!res || !res.success) {
+        const newInquiry = {
+          _id: 'inq_' + Date.now(),
+          ...payload,
+          status: 'new',
+          createdAt: new Date().toISOString()
+        };
+
+        const existing = localStorage.getItem('ats_custom_inquiries');
+        const list = existing ? JSON.parse(existing) : [];
+        list.unshift(newInquiry);
+        localStorage.setItem('ats_custom_inquiries', JSON.stringify(list));
+      }
+    } catch (e) {
+      console.error(e);
+      // Fallback save on network error
       const newInquiry = {
         _id: 'inq_' + Date.now(),
         ...payload,
         status: 'new',
         createdAt: new Date().toISOString()
       };
-
       const existing = localStorage.getItem('ats_custom_inquiries');
       const list = existing ? JSON.parse(existing) : [];
       list.unshift(newInquiry);
       localStorage.setItem('ats_custom_inquiries', JSON.stringify(list));
-    } catch (e) {
-      console.error(e);
     }
 
     setSubmitted(true);

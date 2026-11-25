@@ -30,3 +30,12 @@ exports.updateInquiryStatus = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+exports.deleteInquiry = async (req, res) => {
+  try {
+    await Inquiry.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Inquiry deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
