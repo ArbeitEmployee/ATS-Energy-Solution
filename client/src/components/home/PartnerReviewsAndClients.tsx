@@ -86,21 +86,21 @@ export default function PartnerReviewsAndClients() {
               </div>
 
               {/* Author Profile */}
-              <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                <div className="w-11 h-11 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-3.5 pt-4 border-t border-slate-100 mt-auto">
+                <div className="w-14 h-14 rounded-full bg-slate-100 border-2 border-emerald-500/20 shadow-sm overflow-hidden flex items-center justify-center shrink-0 ring-2 ring-slate-100">
                   {rev.image ? (
-                    <img src={rev.image} alt={rev.author} className="w-full h-full object-cover" />
+                    <img src={rev.image} alt={rev.author} className="w-full h-full object-cover object-center" />
                   ) : (
-                    <span className="font-bold text-xs text-emerald-600">
+                    <span className="font-extrabold text-base text-emerald-600 bg-emerald-50 w-full h-full flex items-center justify-center">
                       {rev.author.charAt(0)}
                     </span>
                   )}
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-slate-900 text-xs sm:text-sm">
+                <div className="flex flex-col min-w-0">
+                  <span className="font-extrabold text-slate-900 text-sm sm:text-base leading-snug truncate" title={rev.author}>
                     {rev.author}
                   </span>
-                  <span className="text-[11px] text-slate-500 font-medium">
+                  <span className="text-xs text-slate-500 font-medium truncate" title={rev.designation || 'Dealer / Partner'}>
                     {rev.designation || 'Dealer / Partner'}
                   </span>
                 </div>

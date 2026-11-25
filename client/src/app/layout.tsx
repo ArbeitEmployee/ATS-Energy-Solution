@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: "ATS ENERGY SOLUTIONS | Industrial Electrical & Solar Technology Bangladesh",
   description: "Official Corporate Website and CMS for ATS Energy Solutions Bangladesh.",
   keywords: "ATS Energy, Electrical accessories Bangladesh, LED bulbs, Gang Switch, MCB, Cables 1.5 RM 2.5 RM, Solar systems Dhaka",
+  icons: {
+    icon: "/favicon.jpg",
+    shortcut: "/favicon.jpg",
+    apple: "/favicon.jpg",
+  },
 };
 
 export default function RootLayout({
