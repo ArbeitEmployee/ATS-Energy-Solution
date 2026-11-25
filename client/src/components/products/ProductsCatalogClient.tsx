@@ -200,7 +200,7 @@ export default function ProductsCatalogClient({
           {/* ========================================================
               LEFT SIDEBAR: AUTHENTIC INDUSTRIAL CATALOG NAVIGATION (lg:col-span-3)
              ======================================================== */}
-          <aside className={`lg:col-span-3 lg:block ${mobileFilterOpen ? 'block' : 'hidden'} space-y-5`}>
+          <aside className={`lg:col-span-3 lg:block ${mobileFilterOpen ? 'block' : 'hidden'} space-y-5 lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1 scrollbar-thin`}>
             
             {/* Quick Search Card (Modern Minimalist Form) */}
             <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-3">
