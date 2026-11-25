@@ -123,19 +123,19 @@ export default function Navbar() {
 
       {/* Mobile Drawer (Side-Slide from Right - Completely Self-Contained Fixed Overlay) */}
       <div 
-        className={`fixed inset-0 z-[999] md:hidden transition-all duration-300 ${
+        className={`fixed inset-0 top-0 left-0 w-screen h-[100dvh] z-[9999] md:hidden transition-all duration-300 ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
         }`}
       >
         {/* Dark Backdrop Overlay */}
         <div 
           onClick={() => setMobileMenuOpen(false)}
-          className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm cursor-pointer"
+          className="fixed inset-0 top-0 left-0 w-full h-full bg-slate-950/70 backdrop-blur-sm cursor-pointer"
         />
 
         {/* Side-Slide Solid White Drawer Panel */}
         <aside 
-          className={`absolute top-0 right-0 h-full w-[85%] max-w-xs bg-white text-slate-900 shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-out transform ${
+          className={`fixed top-0 right-0 h-[100dvh] w-[85%] max-w-xs bg-white text-slate-900 shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-out transform z-10 ${
             mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
