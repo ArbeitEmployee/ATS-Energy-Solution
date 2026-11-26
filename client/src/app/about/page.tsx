@@ -25,23 +25,18 @@ import {
   Layers
 } from 'lucide-react';
 import { fallbackAboutContent, atsOfficialLogo } from '@/lib/data';
+import { getSetting } from '@/lib/api';
 import { AboutContent } from '@/types';
 
 export default function AboutPage() {
   const [about, setAbout] = useState<AboutContent>(fallbackAboutContent);
 
   useEffect(() => {
-    const saved = localStorage.getItem('ats_custom_about');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed && parsed.title) {
-          setAbout(parsed);
-        }
-      } catch (e) {
-        console.error(e);
+    getSetting<AboutContent>('about').then((data) => {
+      if (data && data.title) {
+        setAbout(data);
       }
-    }
+    });
   }, []);
 
   return (

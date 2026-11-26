@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Send, CheckCircle2 } from 'lucide-react';
 import { PopupSettings } from '@/types';
 import { fallbackPopupSettings } from '@/lib/data';
-import { submitInquiry } from '@/lib/api';
+import { submitInquiry, getSetting } from '@/lib/api';
 import Link from 'next/link';
 
 export default function WebsitePopup() {
@@ -20,45 +20,26 @@ export default function WebsitePopup() {
   const [details, setDetails] = useState('');
 
   useEffect(() => {
-    // Only show on client
-    try {
-      const saved = localStorage.getItem('ats_custom_popup');
-      let currentPopup: PopupSettings = fallbackPopupSettings;
-      if (saved) {
-        currentPopup = JSON.parse(saved);
-      }
+    let active = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    getSetting<PopupSettings>('popup').then((dbPopup) => {
+      if (!active) return;
+      const currentPopup = dbPopup || fallbackPopupSettings;
       setPopup(currentPopup);
 
-      // Check if user already dismissed popup in this session
       const alreadyClosed = sessionStorage.getItem('ats_popup_closed');
-
-      // If enabled and not closed in current session, open popup after 800ms
       if (currentPopup.isEnabled && alreadyClosed !== 'true') {
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
           setIsOpen(true);
         }, 800);
-        return () => clearTimeout(timer);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+    });
 
-  // Listen to cross-tab storage events or custom trigger to preview instantly
-  useEffect(() => {
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'ats_custom_popup' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          setPopup(parsed);
-          if (parsed.isEnabled) {
-            setIsOpen(true);
-          }
-        } catch (err) {}
-      }
+    return () => {
+      active = false;
+      if (timer) clearTimeout(timer);
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const handleClose = () => {
@@ -85,36 +66,9 @@ export default function WebsitePopup() {
     };
 
     try {
-      // 1. Submit to Backend MongoDB API
-      const res = await submitInquiry(payload);
-
-      // 2. Only save to localStorage as backup if server API is offline
-      if (!res || !res.success) {
-        const newInquiry = {
-          _id: 'inq_' + Date.now(),
-          ...payload,
-          status: 'new',
-          createdAt: new Date().toISOString()
-        };
-
-        const existing = localStorage.getItem('ats_custom_inquiries');
-        const list = existing ? JSON.parse(existing) : [];
-        list.unshift(newInquiry);
-        localStorage.setItem('ats_custom_inquiries', JSON.stringify(list));
-      }
+      await submitInquiry(payload);
     } catch (e) {
       console.error(e);
-      // Fallback save on network error
-      const newInquiry = {
-        _id: 'inq_' + Date.now(),
-        ...payload,
-        status: 'new',
-        createdAt: new Date().toISOString()
-      };
-      const existing = localStorage.getItem('ats_custom_inquiries');
-      const list = existing ? JSON.parse(existing) : [];
-      list.unshift(newInquiry);
-      localStorage.setItem('ats_custom_inquiries', JSON.stringify(list));
     }
 
     setSubmitted(true);

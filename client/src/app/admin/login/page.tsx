@@ -32,14 +32,7 @@ export default function AdminLoginPage() {
         router.push('/admin/dashboard');
       }
     } catch (err: any) {
-      // Fallback demo bypass for direct instant evaluation
-      if (email === 'admin@atsenergybd.com' && password === 'adminpassword123') {
-        localStorage.setItem('ats_admin_token', 'demo_jwt_token_ats_energy');
-        localStorage.setItem('ats_admin_user', JSON.stringify({ name: 'ATS Admin', email }));
-        router.push('/admin/dashboard');
-      } else {
-        setError(err.response?.data?.message || 'Invalid admin credentials');
-      }
+      setError(err.response?.data?.message || 'Invalid admin credentials');
     } finally {
       setLoading(false);
     }

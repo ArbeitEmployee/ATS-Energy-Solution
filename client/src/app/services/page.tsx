@@ -4,32 +4,26 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, PhoneCall } from 'lucide-react';
 import { fallbackServices } from '@/lib/data';
+import { getSetting } from '@/lib/api';
 import { ServiceItem } from '@/types';
 
 export default function ServicesPage() {
   const [services, setServices] = useState<ServiceItem[]>(fallbackServices);
 
   useEffect(() => {
-    const saved = localStorage.getItem('ats_custom_services');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge with fallback to ensure rich image data if secondaryImage is missing
-          const merged = parsed.map((item, idx) => {
-            const fallback = fallbackServices[idx] || fallbackServices[0];
-            return {
-              ...item,
-              image: item.image || fallback.image,
-              secondaryImage: item.secondaryImage || fallback.secondaryImage
-            };
-          });
-          setServices(merged);
-        }
-      } catch (e) {
-        console.error('Error loading services:', e);
+    getSetting<ServiceItem[]>('services').then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        const merged = data.map((item, idx) => {
+          const fallback = fallbackServices[idx] || fallbackServices[0];
+          return {
+            ...item,
+            image: item.image || fallback.image,
+            secondaryImage: item.secondaryImage || fallback.secondaryImage
+          };
+        });
+        setServices(merged);
       }
-    }
+    });
   }, []);
 
   return (

@@ -3,31 +3,30 @@
 import { useState, useEffect } from 'react';
 import { Plus, Minus, HelpCircle } from 'lucide-react';
 import { fallbackFAQs } from '@/lib/data';
+import { getSetting } from '@/lib/api';
 import { FAQItem } from '@/types';
 
-export default function HomeFAQSection() {
-  const [faqs, setFaqs] = useState<FAQItem[]>(fallbackFAQs);
+interface HomeFAQSectionProps {
+  initialFaqs?: FAQItem[];
+}
+
+export default function HomeFAQSection({ initialFaqs }: HomeFAQSectionProps) {
+  const [faqs, setFaqs] = useState<FAQItem[]>(
+    initialFaqs && initialFaqs.length > 0 ? initialFaqs : fallbackFAQs
+  );
   const [openIndex, setOpenIndex] = useState<number | null>(0); // First item open by default
 
   useEffect(() => {
-    const loadFaqs = () => {
-      const saved = localStorage.getItem('ats_custom_faqs');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setFaqs(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
+    if (initialFaqs && initialFaqs.length > 0) {
+      setFaqs(initialFaqs);
+      return;
+    }
+    getSetting<FAQItem[]>('faqs').then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setFaqs(data);
       }
-    };
-
-    loadFaqs();
-    window.addEventListener('storage', loadFaqs);
-    return () => window.removeEventListener('storage', loadFaqs);
-  }, []);
+    });
+  }, [initialFaqs]);
 
   const toggleAccordion = (index: number) => {
     setOpenIndex(prev => (prev === index ? null : index));

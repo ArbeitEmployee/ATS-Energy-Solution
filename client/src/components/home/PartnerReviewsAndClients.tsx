@@ -3,43 +3,39 @@
 import { useState, useEffect } from 'react';
 import { Quote } from 'lucide-react';
 import { fallbackPartnerReviews, fallbackKeyClients } from '@/lib/data';
+import { getAllSettings } from '@/lib/api';
 import { PartnerReview, KeyClient } from '@/types';
 
-export default function PartnerReviewsAndClients() {
-  const [reviews, setReviews] = useState<PartnerReview[]>(fallbackPartnerReviews);
-  const [clients, setClients] = useState<KeyClient[]>(fallbackKeyClients);
+interface PartnerReviewsAndClientsProps {
+  initialReviews?: PartnerReview[];
+  initialClients?: KeyClient[];
+}
+
+export default function PartnerReviewsAndClients({
+  initialReviews,
+  initialClients,
+}: PartnerReviewsAndClientsProps) {
+  const [reviews, setReviews] = useState<PartnerReview[]>(
+    initialReviews && initialReviews.length > 0 ? initialReviews : fallbackPartnerReviews
+  );
+  const [clients, setClients] = useState<KeyClient[]>(
+    initialClients && initialClients.length > 0 ? initialClients : fallbackKeyClients
+  );
 
   useEffect(() => {
-    const loadData = () => {
-      const savedReviews = localStorage.getItem('ats_custom_partner_reviews');
-      if (savedReviews) {
-        try {
-          const parsed = JSON.parse(savedReviews);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setReviews(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
+    if (initialReviews && initialReviews.length > 0) setReviews(initialReviews);
+    if (initialClients && initialClients.length > 0) setClients(initialClients);
+    if (initialReviews || initialClients) return;
 
-      const savedClients = localStorage.getItem('ats_custom_key_clients');
-      if (savedClients) {
-        try {
-          const parsed = JSON.parse(savedClients);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setClients(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
+    getAllSettings().then((settings) => {
+      if (Array.isArray(settings.partner_reviews) && settings.partner_reviews.length > 0) {
+        setReviews(settings.partner_reviews);
       }
-    };
-
-    loadData();
-    window.addEventListener('storage', loadData);
-    return () => window.removeEventListener('storage', loadData);
-  }, []);
+      if (Array.isArray(settings.key_clients) && settings.key_clients.length > 0) {
+        setClients(settings.key_clients);
+      }
+    });
+  }, [initialReviews, initialClients]);
 
   // Duplicate logos for seamless infinite smooth scrolling
   const marqueeClients = [...clients, ...clients];

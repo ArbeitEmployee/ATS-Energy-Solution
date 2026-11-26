@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight, Zap, Shield, Award, CheckCircle } from 'lucide-react';
-import { getProducts, getCategories, getBanners } from '@/lib/api';
+import { getProducts, getCategories, getBanners, getAllSettings } from '@/lib/api';
 import ProductCard from '@/components/ui/ProductCard';
 import BannerSlider from '@/components/home/BannerSlider';
 import HomeServicesSection from '@/components/home/HomeServicesSection';
@@ -12,10 +12,11 @@ import HomeFAQSection from '@/components/home/HomeFAQSection';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [products, categories, banners] = await Promise.all([
+  const [products, categories, banners, settings] = await Promise.all([
     getProducts(),
     getCategories(),
-    getBanners()
+    getBanners(),
+    getAllSettings()
   ]);
 
   return (
@@ -26,19 +27,26 @@ export default async function HomePage() {
       </section>
 
       {/* Dynamic Services from atsenergybd.com and Admin CMS */}
-      <HomeServicesSection />
+      <HomeServicesSection initialServices={settings.services} />
 
       {/* Corporate Product Divisions Showcase (Categories Section below Services) */}
       <HomeCategoriesSection initialCategories={categories} />
 
       {/* Product Showcase Section with Admin Manageable Banner */}
-      <HomeProductsSection initialProducts={products} />
+      <HomeProductsSection
+        initialProducts={products}
+        initialBanner={settings.product_section_banner}
+        initialBannerLink={settings.product_section_banner_link}
+      />
 
       {/* What Our Partners Say & OUR KEY CLIENTS Section */}
-      <PartnerReviewsAndClients />
+      <PartnerReviewsAndClients
+        initialReviews={settings.partner_reviews}
+        initialClients={settings.key_clients}
+      />
 
       {/* Editable Interactive FAQ Section */}
-      <HomeFAQSection />
+      <HomeFAQSection initialFaqs={settings.faqs} />
 
       {/* Corporate Call To Action */}
       <section className="py-16 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950">

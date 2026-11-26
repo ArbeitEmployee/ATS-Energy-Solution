@@ -4,10 +4,17 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import { fallbackServices } from '@/lib/data';
+import { getSetting } from '@/lib/api';
 import { ServiceItem } from '@/types';
 
-export default function HomeServicesSection() {
-  const [services, setServices] = useState<ServiceItem[]>(fallbackServices);
+interface HomeServicesSectionProps {
+  initialServices?: ServiceItem[];
+}
+
+export default function HomeServicesSection({ initialServices }: HomeServicesSectionProps) {
+  const [services, setServices] = useState<ServiceItem[]>(
+    initialServices && initialServices.length > 0 ? initialServices : fallbackServices
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -15,26 +22,18 @@ export default function HomeServicesSection() {
   const [displayedTitle, setDisplayedTitle] = useState('');
   const [displayedDesc, setDisplayedDesc] = useState('');
 
-  // Load custom services from localStorage or admin CMS
+  // Load services from database API
   useEffect(() => {
-    const loadServices = () => {
-      const saved = localStorage.getItem('ats_custom_services');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setServices(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
+    if (initialServices && initialServices.length > 0) {
+      setServices(initialServices);
+      return;
+    }
+    getSetting<ServiceItem[]>('services').then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setServices(data);
       }
-    };
-
-    loadServices();
-    window.addEventListener('storage', loadServices);
-    return () => window.removeEventListener('storage', loadServices);
-  }, []);
+    });
+  }, [initialServices]);
 
   // Typewriter animation trigger & wait 5 seconds AFTER description completes
   useEffect(() => {

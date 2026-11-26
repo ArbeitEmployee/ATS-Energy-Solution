@@ -6,7 +6,7 @@ const { products: fallbackProducts } = require('../data/seedData');
 // @route   GET /api/products
 exports.getProducts = async (req, res) => {
   try {
-    const { category, subcategory, search, featured, page = 1, limit = 20 } = req.query;
+    const { category, subcategory, search, featured, page = 1, limit = 200 } = req.query;
     let query = {};
 
     if (category) {
@@ -111,10 +111,12 @@ exports.createProduct = async (req, res) => {
 };
 
 // @desc    Update product (Admin)
-// @route   PUT /api/products/:id
+// @route   PUT /api/products/:slugOrId
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const param = req.params.slugOrId;
+    const filter = param.match(/^[0-9a-fA-F]{24}$/) ? { _id: param } : { slug: param };
+    const product = await Product.findOneAndUpdate(filter, req.body, {
       new: true,
       runValidators: true
     });
@@ -128,10 +130,12 @@ exports.updateProduct = async (req, res) => {
 };
 
 // @desc    Delete product (Admin)
-// @route   DELETE /api/products/:id
+// @route   DELETE /api/products/:slugOrId
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const param = req.params.slugOrId;
+    const filter = param.match(/^[0-9a-fA-F]{24}$/) ? { _id: param } : { slug: param };
+    const product = await Product.findOneAndDelete(filter);
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }

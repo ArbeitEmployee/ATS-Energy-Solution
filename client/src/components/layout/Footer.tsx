@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Phone, Mail, MapPin, ArrowRight, ShieldCheck } from 'lucide-react';
 import { atsOfficialLogo, fallbackSocialMedia } from '@/lib/data';
+import { getSetting } from '@/lib/api';
 import { SocialMediaLinks } from '@/types';
 import { FacebookIcon, WhatsAppIcon, InstagramIcon, YoutubeIcon, LinkedinIcon, TwitterXIcon } from '@/components/ui/SocialIcons';
 
@@ -11,15 +12,9 @@ export default function Footer() {
   const [socials, setSocials] = useState<SocialMediaLinks>(fallbackSocialMedia);
 
   useEffect(() => {
-    const saved = localStorage.getItem('ats_custom_socials');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed) setSocials(parsed);
-      } catch (e) {
-        console.error(e);
-      }
-    }
+    getSetting<SocialMediaLinks>('socials').then((data) => {
+      if (data) setSocials(data);
+    });
   }, []);
 
   return (

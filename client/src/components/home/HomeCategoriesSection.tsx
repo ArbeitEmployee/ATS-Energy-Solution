@@ -11,29 +11,8 @@ interface HomeCategoriesSectionProps {
 export default function HomeCategoriesSection({ initialCategories }: HomeCategoriesSectionProps) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
 
-  // Sync from localStorage if categories updated via admin dashboard
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('ats_custom_categories');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge images from initialCategories/fallback if localStorage item is missing an image
-          const merged = parsed.map(c => {
-            if (!c.image) {
-              const matched = initialCategories.find(ic => (ic.id === c.id || ic.slug === c.slug || ic.name === c.name));
-              return matched ? { ...c, image: matched.image } : c;
-            }
-            return c;
-          });
-          setCategories(merged);
-          return;
-        }
-      }
-      setCategories(initialCategories);
-    } catch (e) {
-      console.error(e);
-    }
+    setCategories(initialCategories);
   }, [initialCategories]);
 
   // Show only 5 categories in a single clean row

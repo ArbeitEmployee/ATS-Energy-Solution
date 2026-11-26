@@ -33,7 +33,25 @@ import {
 } from 'lucide-react';
 import { Product, Attribute, Banner, Category, SubCategory, SubSubCategory, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, LegalContent, PopupSettings, Inquiry, FAQItem } from '@/types';
 import { fallbackProducts, initialBanners, fallbackCategories, fallbackServices, fallbackPartnerReviews, fallbackKeyClients, fallbackAboutContent, fallbackSocialMedia, fallbackSEO, fallbackLegalContent, fallbackPopupSettings, fallbackFAQs, atsOfficialLogo } from '@/lib/data';
-import { getInquiries, updateInquiryStatus, deleteInquiry, getBanners, createBanner, updateBanner, deleteBannerApi } from '@/lib/api';
+import {
+  getInquiries,
+  updateInquiryStatus,
+  deleteInquiry,
+  getBanners,
+  createBanner,
+  updateBanner,
+  deleteBannerApi,
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProductApi,
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategoryApi,
+  getAllSettings,
+  updateSetting,
+} from '@/lib/api';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
@@ -152,6 +170,10 @@ export default function AdminDashboardPage() {
   const [inquiryFilter, setInquiryFilter] = useState<'all' | 'new' | 'contacted' | 'closed'>('all');
   const [inquirySearch, setInquirySearch] = useState('');
 
+  // Legacy localStorage -> MongoDB migration state
+  const [hasLegacyLocalData, setHasLegacyLocalData] = useState(false);
+  const [syncingLocalData, setSyncingLocalData] = useState(false);
+
   // Filter inquiries memo/calculation
   const filteredInquiries = useMemo(() => {
     return inquiries.filter(inq => {
@@ -169,82 +191,47 @@ export default function AdminDashboardPage() {
     });
   }, [inquiries, inquiryFilter, inquirySearch]);
 
-  // Load inquiries from Backend API and LocalStorage
+  // Load inquiries from Backend API
   const loadInquiries = async () => {
     setLoadingInquiries(true);
-    let loaded: Inquiry[] = [];
     try {
       const res = await getInquiries();
-      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
-        loaded = res.data;
+      if (res && res.success && Array.isArray(res.data)) {
+        setInquiries(res.data);
+      } else {
+        setInquiries([]);
       }
     } catch (e) {
       console.error(e);
+      setInquiries([]);
     }
-
-    try {
-      const local = localStorage.getItem('ats_custom_inquiries');
-      if (local) {
-        const parsed = JSON.parse(local);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge unique checking:
-          // 1. By ID (if identical)
-          // 2. By content deduplication: (phone, name, message) to prevent local client duplicate with server DB record
-          const existingIds = new Set(loaded.map(i => i._id || i.id));
-          parsed.forEach((item: Inquiry) => {
-            const id = item._id || item.id;
-            const isDuplicateContent = loaded.some(i => 
-              (i.phone && item.phone && i.phone === item.phone && i.name === item.name && (i.message === item.message || i.productOfInterest === item.productOfInterest))
-            );
-
-            if (!existingIds.has(id) && !isDuplicateContent) {
-              loaded.unshift(item);
-              existingIds.add(id);
-            }
-          });
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    setInquiries(loaded);
     setLoadingInquiries(false);
   };
 
   const handleUpdateInquiryStatus = async (id: string, newStatus: string) => {
     try {
       await updateInquiryStatus(id, newStatus);
-    } catch (e) {}
-
-    const updated = inquiries.map(inq => 
-      (inq._id === id || inq.id === id) ? { ...inq, status: newStatus as any } : inq
-    );
-    setInquiries(updated);
-    try {
-      localStorage.setItem('ats_custom_inquiries', JSON.stringify(updated));
-    } catch (e) {}
+      setInquiries(inquiries.map(inq =>
+        (inq._id === id || inq.id === id) ? { ...inq, status: newStatus as any } : inq
+      ));
+    } catch (e) {
+      alert('Failed to update inquiry status in database.');
+    }
   };
 
   const handleDeleteInquiry = async (id: string) => {
     if (confirm('Are you sure you want to remove this inquiry?')) {
-      // 1. Delete from Server MongoDB API
       try {
         await deleteInquiry(id);
+        setInquiries(inquiries.filter(inq => inq._id !== id && inq.id !== id));
       } catch (e) {
         console.error(e);
+        alert('Failed to delete inquiry from database.');
       }
-
-      // 2. Delete from Local State & LocalStorage
-      const updated = inquiries.filter(inq => inq._id !== id && inq.id !== id);
-      setInquiries(updated);
-      try {
-        localStorage.setItem('ats_custom_inquiries', JSON.stringify(updated));
-      } catch (e) {}
     }
   };
 
-  // Load from Storage
+  // Load all data from MongoDB Backend API
   useEffect(() => {
     const token = localStorage.getItem('ats_admin_token');
     if (!token) {
@@ -252,184 +239,73 @@ export default function AdminDashboardPage() {
       return;
     }
 
+    const legacyKeys = [
+      'ats_custom_products',
+      'ats_custom_categories',
+      'ats_custom_services',
+      'ats_custom_partner_reviews',
+      'ats_custom_key_clients',
+      'ats_custom_about',
+      'ats_custom_socials',
+      'ats_custom_seo',
+      'ats_custom_legal',
+      'ats_custom_popup',
+      'ats_custom_faqs',
+      'ats_product_section_banner',
+      'ats_product_section_banner_link',
+      'ats_custom_contact_info'
+    ];
+    setHasLegacyLocalData(legacyKeys.some((k) => Boolean(localStorage.getItem(k))));
+
     getBanners()
       .then((dbBanners) => {
         if (Array.isArray(dbBanners)) {
           setBanners(dbBanners);
-          localStorage.setItem('ats_custom_banners', JSON.stringify(dbBanners));
+        }
+      })
+      .catch(() => setBanners([]));
+
+    getProducts()
+      .then((dbProducts) => {
+        if (Array.isArray(dbProducts)) {
+          setProducts(dbProducts);
+        }
+      })
+      .catch(() => setProducts([]));
+
+    getCategories()
+      .then((dbCategories) => {
+        const list = Array.isArray(dbCategories) && dbCategories.length > 0 ? dbCategories : fallbackCategories;
+        setCategories(list);
+        if (list.length > 0) {
+          setSubTargetCatId(list[0]._id || list[0].id || list[0].slug);
+          setSubSubTargetCatId(list[0]._id || list[0].id || list[0].slug);
+          setProdCategory(list[0].name);
         }
       })
       .catch(() => {
-        const savedBanners = localStorage.getItem('ats_custom_banners');
-        if (savedBanners) {
-          try {
-            setBanners(JSON.parse(savedBanners));
-          } catch (e) {
-            setBanners([]);
-          }
-        } else {
-          setBanners([]);
-        }
+        setCategories(fallbackCategories);
+        setSubTargetCatId(fallbackCategories[0].id || fallbackCategories[0].slug);
+        setSubSubTargetCatId(fallbackCategories[0].id || fallbackCategories[0].slug);
+        setProdCategory(fallbackCategories[0].name);
       });
 
-    const savedServices = localStorage.getItem('ats_custom_services');
-    if (savedServices) {
-      try {
-        const parsedSrv = JSON.parse(savedServices);
-        if (Array.isArray(parsedSrv) && parsedSrv.length > 0) {
-          setServices(parsedSrv);
-        } else {
-          setServices(fallbackServices);
-        }
-      } catch (e) {
-        setServices(fallbackServices);
-      }
-    } else {
-      setServices(fallbackServices);
-    }
-
-    const savedReviews = localStorage.getItem('ats_custom_partner_reviews');
-    if (savedReviews) {
-      try {
-        const parsedRev = JSON.parse(savedReviews);
-        if (Array.isArray(parsedRev) && parsedRev.length > 0) {
-          setPartnerReviews(parsedRev);
-        } else {
-          setPartnerReviews(fallbackPartnerReviews);
-        }
-      } catch (e) {
-        setPartnerReviews(fallbackPartnerReviews);
-      }
-    } else {
-      setPartnerReviews(fallbackPartnerReviews);
-    }
-
-    const savedClients = localStorage.getItem('ats_custom_key_clients');
-    if (savedClients) {
-      try {
-        const parsedCli = JSON.parse(savedClients);
-        if (Array.isArray(parsedCli) && parsedCli.length > 0) {
-          setKeyClients(parsedCli);
-        } else {
-          setKeyClients(fallbackKeyClients);
-        }
-      } catch (e) {
-        setKeyClients(fallbackKeyClients);
-      }
-    } else {
-      setKeyClients(fallbackKeyClients);
-    }
-
-    const savedAbout = localStorage.getItem('ats_custom_about');
-    if (savedAbout) {
-      try {
-        const parsedAbout = JSON.parse(savedAbout);
-        if (parsedAbout && parsedAbout.title) {
-          setAboutData(parsedAbout);
-        } else {
-          setAboutData(fallbackAboutContent);
-        }
-      } catch (e) {
-        setAboutData(fallbackAboutContent);
-      }
-    } else {
-      setAboutData(fallbackAboutContent);
-    }
-
-    const savedSocials = localStorage.getItem('ats_custom_socials');
-    if (savedSocials) {
-      try {
-        const parsedSoc = JSON.parse(savedSocials);
-        if (parsedSoc) setSocials(parsedSoc);
-      } catch (e) {
-        setSocials(fallbackSocialMedia);
-      }
-    } else {
-      setSocials(fallbackSocialMedia);
-    }
-
-    const savedSEO = localStorage.getItem('ats_custom_seo');
-    if (savedSEO) {
-      try {
-        const parsedSEO = JSON.parse(savedSEO);
-        if (parsedSEO) setSeo(parsedSEO);
-      } catch (e) {
-        setSeo(fallbackSEO);
-      }
-    } else {
-      setSeo(fallbackSEO);
-    }
-
-    const savedLegal = localStorage.getItem('ats_custom_legal');
-    if (savedLegal) {
-      try {
-        const parsedLegal = JSON.parse(savedLegal);
-        if (parsedLegal && parsedLegal.termsTitle) setLegalData(parsedLegal);
-      } catch (e) {
-        setLegalData(fallbackLegalContent);
-      }
-    } else {
-      setLegalData(fallbackLegalContent);
-    }
-
-    const savedPopup = localStorage.getItem('ats_custom_popup');
-    if (savedPopup) {
-      try {
-        const parsedPop = JSON.parse(savedPopup);
-        if (parsedPop) setPopupData(parsedPop);
-      } catch (e) {
-        setPopupData(fallbackPopupSettings);
-      }
-    } else {
-      setPopupData(fallbackPopupSettings);
-    }
-
-    const savedFaqs = localStorage.getItem('ats_custom_faqs');
-    if (savedFaqs) {
-      try {
-        const parsedF = JSON.parse(savedFaqs);
-        if (Array.isArray(parsedF) && parsedF.length > 0) setFaqs(parsedF);
-      } catch (e) {
-        setFaqs(fallbackFAQs);
-      }
-    } else {
-      setFaqs(fallbackFAQs);
-    }
-
-    const savedProdBanner = localStorage.getItem('ats_product_section_banner');
-    if (savedProdBanner) {
-      setProductSectionBanner(savedProdBanner);
-    } else {
-      setProductSectionBanner('https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg');
-    }
-    const savedProdBannerLink = localStorage.getItem('ats_product_section_banner_link');
-    if (savedProdBannerLink) {
-      setProductSectionBannerLink(savedProdBannerLink);
-    } else {
-      setProductSectionBannerLink('/products');
-    }
-
-    const savedCategories = localStorage.getItem('ats_custom_categories');
-    if (savedCategories) {
-      try {
-        const parsed = JSON.parse(savedCategories);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCategories(parsed);
-          setSubTargetCatId(parsed[0].id || parsed[0].slug);
-          setSubSubTargetCatId(parsed[0].id || parsed[0].slug);
-          setProdCategory(parsed[0].name);
-        } else {
-          setCategories(fallbackCategories);
-        }
-      } catch (e) {
-        setCategories(fallbackCategories);
-      }
-    } else {
-      setCategories(fallbackCategories);
-      setSubTargetCatId(fallbackCategories[0].id || fallbackCategories[0].slug);
-      setSubSubTargetCatId(fallbackCategories[0].id || fallbackCategories[0].slug);
-      setProdCategory(fallbackCategories[0].name);
-    }
+    getAllSettings().then((settings) => {
+      setServices(Array.isArray(settings.services) && settings.services.length > 0 ? settings.services : fallbackServices);
+      setPartnerReviews(Array.isArray(settings.partner_reviews) && settings.partner_reviews.length > 0 ? settings.partner_reviews : fallbackPartnerReviews);
+      setKeyClients(Array.isArray(settings.key_clients) && settings.key_clients.length > 0 ? settings.key_clients : fallbackKeyClients);
+      setAboutData(settings.about && settings.about.title ? settings.about : fallbackAboutContent);
+      setSocials(settings.socials || fallbackSocialMedia);
+      setSeo(settings.seo || fallbackSEO);
+      setLegalData(settings.legal && settings.legal.termsTitle ? settings.legal : fallbackLegalContent);
+      setPopupData(settings.popup || fallbackPopupSettings);
+      setFaqs(Array.isArray(settings.faqs) && settings.faqs.length > 0 ? settings.faqs : fallbackFAQs);
+      setProductSectionBanner(
+        settings.product_section_banner ||
+          'https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg'
+      );
+      setProductSectionBannerLink(settings.product_section_banner_link || '/products');
+    });
 
     loadInquiries();
   }, [router]);
@@ -438,6 +314,148 @@ export default function AdminDashboardPage() {
     localStorage.removeItem('ats_admin_token');
     localStorage.removeItem('ats_admin_user');
     router.push('/admin/login');
+  };
+
+  const handleSyncLocalStorageToDB = async () => {
+    setSyncingLocalData(true);
+    let syncedSettings = 0;
+    let syncedCategories = 0;
+    let syncedProducts = 0;
+
+    try {
+      // 1. Sync Site Settings
+      const settingKeyMap: Array<[string, string, boolean]> = [
+        ['ats_custom_services', 'services', true],
+        ['ats_custom_partner_reviews', 'partner_reviews', true],
+        ['ats_custom_key_clients', 'key_clients', true],
+        ['ats_custom_about', 'about', true],
+        ['ats_custom_socials', 'socials', true],
+        ['ats_custom_seo', 'seo', true],
+        ['ats_custom_legal', 'legal', true],
+        ['ats_custom_popup', 'popup', true],
+        ['ats_custom_faqs', 'faqs', true],
+        ['ats_custom_contact_info', 'contact_info', true],
+        ['ats_product_section_banner', 'product_section_banner', false],
+        ['ats_product_section_banner_link', 'product_section_banner_link', false],
+      ];
+
+      for (const [lsKey, dbKey, isJson] of settingKeyMap) {
+        const raw = localStorage.getItem(lsKey);
+        if (!raw) continue;
+        try {
+          const val = isJson ? JSON.parse(raw) : raw;
+          await updateSetting(dbKey, val);
+          syncedSettings++;
+        } catch (err) {
+          console.error(`Failed syncing setting ${dbKey}:`, err);
+        }
+      }
+
+      // 2. Sync Categories (update existing, create new, delete removed)
+      const rawCats = localStorage.getItem('ats_custom_categories');
+      if (rawCats) {
+        const localCats: Category[] = JSON.parse(rawCats);
+        if (Array.isArray(localCats)) {
+          const dbCats = await getCategories();
+          const localSlugs = new Set(localCats.map(c => c.slug));
+
+          for (const dbCat of dbCats) {
+            if (!localSlugs.has(dbCat.slug)) {
+              await deleteCategoryApi(dbCat._id || dbCat.slug);
+            }
+          }
+
+          for (const cat of localCats) {
+            const match = dbCats.find(d => (cat._id && d._id === cat._id) || d.slug === cat.slug);
+            const { _id, ...catPayload } = cat as any;
+            if (match?._id) {
+              await updateCategory(match._id, catPayload);
+            } else {
+              await createCategory(catPayload);
+            }
+            syncedCategories++;
+          }
+        }
+      }
+
+      // 3. Sync Products (update existing, create new, delete removed)
+      const rawProds = localStorage.getItem('ats_custom_products');
+      if (rawProds) {
+        const localProds: Product[] = JSON.parse(rawProds);
+        if (Array.isArray(localProds)) {
+          const dbProds = await getProducts();
+          const localSlugs = new Set(localProds.map(p => p.slug));
+
+          for (const dbProd of dbProds) {
+            if (!localSlugs.has(dbProd.slug)) {
+              await deleteProductApi(dbProd._id || dbProd.slug);
+            }
+          }
+
+          for (const prod of localProds) {
+            const match = dbProds.find(d => (prod._id && d._id === prod._id) || d.slug === prod.slug);
+            const { _id, ...prodPayload } = prod as any;
+            if (match?._id) {
+              await updateProduct(match._id, prodPayload);
+            } else {
+              await createProduct(prodPayload);
+            }
+            syncedProducts++;
+          }
+        }
+      }
+
+      // 4. Clear legacy localStorage keys after successful migration
+      [
+        'ats_custom_products',
+        'ats_custom_categories',
+        'ats_custom_services',
+        'ats_custom_partner_reviews',
+        'ats_custom_key_clients',
+        'ats_custom_about',
+        'ats_custom_socials',
+        'ats_custom_seo',
+        'ats_custom_legal',
+        'ats_custom_popup',
+        'ats_custom_faqs',
+        'ats_product_section_banner',
+        'ats_product_section_banner_link',
+        'ats_custom_contact_info',
+        'ats_custom_banners',
+        'ats_custom_inquiries'
+      ].forEach(k => localStorage.removeItem(k));
+
+      setHasLegacyLocalData(false);
+
+      // 5. Reload fresh state from MongoDB
+      const [dbProds, dbCats, dbSettings] = await Promise.all([
+        getProducts(),
+        getCategories(),
+        getAllSettings()
+      ]);
+      if (Array.isArray(dbProds)) setProducts(dbProds);
+      if (Array.isArray(dbCats) && dbCats.length > 0) setCategories(dbCats);
+      if (Array.isArray(dbSettings.services)) setServices(dbSettings.services);
+      if (Array.isArray(dbSettings.partner_reviews)) setPartnerReviews(dbSettings.partner_reviews);
+      if (Array.isArray(dbSettings.key_clients)) setKeyClients(dbSettings.key_clients);
+      if (dbSettings.about) setAboutData(dbSettings.about);
+      if (dbSettings.socials) setSocials(dbSettings.socials);
+      if (dbSettings.seo) setSeo(dbSettings.seo);
+      if (dbSettings.legal) setLegalData(dbSettings.legal);
+      if (dbSettings.popup) setPopupData(dbSettings.popup);
+      if (Array.isArray(dbSettings.faqs)) setFaqs(dbSettings.faqs);
+      if (dbSettings.product_section_banner) setProductSectionBanner(dbSettings.product_section_banner);
+      if (dbSettings.product_section_banner_link) setProductSectionBannerLink(dbSettings.product_section_banner_link);
+
+      alert(
+        `✓ Browser data uploaded to MongoDB successfully!\nCategories: ${syncedCategories} | Products: ${syncedProducts} | Settings: ${syncedSettings}`
+      );
+    } catch (err: any) {
+      console.error('Migration error:', err);
+      alert('Failed to sync some data to database: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setSyncingLocalData(false);
+    }
   };
 
   const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
@@ -497,7 +515,7 @@ export default function AdminDashboardPage() {
     setShowCatModal(true);
   };
 
-  const handleSaveCategory = (e: React.FormEvent) => {
+  const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!catName.trim()) {
       alert('Category Name is required!');
@@ -505,49 +523,54 @@ export default function AdminDashboardPage() {
     }
 
     const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    let updated: Category[] = [];
+    try {
+      if (editingCatId) {
+        const target = categories.find(cat => (cat._id || cat.id || cat.slug) === editingCatId);
+        const payload = {
+          name: catName.trim(),
+          image: catImage || target?.image,
+          banner: catBanner || target?.banner
+        };
+        const res = await updateCategory(target?._id || target?.slug || editingCatId, payload);
+        const savedCat = res?.data || { ...target, ...payload };
+        setCategories(categories.map(cat =>
+          (cat._id || cat.id || cat.slug) === editingCatId ? savedCat : cat
+        ));
+        alert('Category updated in database!');
+      } else {
+        const payload = {
+          id: `cat_${Date.now()}`,
+          name: catName.trim(),
+          slug,
+          image: catImage || 'https://atsenergybd.com/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-28-at-18.43.19.jpeg',
+          banner: catBanner || 'https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-2-768x305.jpeg',
+          subCategoriesList: []
+        };
+        const res = await createCategory(payload);
+        const savedCat = res?.data || payload;
+        setCategories([savedCat, ...categories]);
+        alert('Category added to database!');
+      }
 
-    if (editingCatId) {
-      updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === editingCatId) {
-          return {
-            ...cat,
-            name: catName.trim(),
-            image: catImage || cat.image,
-            banner: catBanner || cat.banner
-          };
-        }
-        return cat;
-      });
-      alert('Category updated successfully!');
-    } else {
-      const newCategory: Category = {
-        id: `cat_${Date.now()}`,
-        name: catName.trim(),
-        slug,
-        image: catImage || 'https://atsenergybd.com/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-28-at-18.43.19.jpeg',
-        banner: catBanner || 'https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-2-768x305.jpeg',
-        subCategoriesList: []
-      };
-      updated = [...categories, newCategory];
-      alert('Category added successfully!');
+      setShowCatModal(false);
+      setEditingCatId(null);
+      setCatName('');
+      setCatImage('');
+      setCatBanner('');
+    } catch (err: any) {
+      alert('Failed to save category to database: ' + (err.response?.data?.message || err.message));
     }
-
-    setCategories(updated);
-    localStorage.setItem('ats_custom_categories', JSON.stringify(updated));
-
-    setShowCatModal(false);
-    setEditingCatId(null);
-    setCatName('');
-    setCatImage('');
-    setCatBanner('');
   };
 
-  const handleDeleteCategory = (catId: string) => {
+  const handleDeleteCategory = async (catId: string) => {
     if (confirm('Are you sure you want to delete this Category?')) {
-      const updated = categories.filter(c => (c.id || c.slug) !== catId);
-      setCategories(updated);
-      localStorage.setItem('ats_custom_categories', JSON.stringify(updated));
+      try {
+        const target = categories.find(c => (c._id || c.id || c.slug) === catId);
+        await deleteCategoryApi(target?._id || target?.slug || catId);
+        setCategories(categories.filter(c => (c._id || c.id || c.slug) !== catId));
+      } catch (err: any) {
+        alert('Failed to delete category from database: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -565,7 +588,7 @@ export default function AdminDashboardPage() {
     setShowSubModal(true);
   };
 
-  const handleSaveSubCategory = (e: React.FormEvent) => {
+  const handleSaveSubCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subTargetCatId || !subName.trim()) {
       alert('Please select a parent Category and provide Sub-Category Name!');
@@ -573,62 +596,47 @@ export default function AdminDashboardPage() {
     }
 
     const subSlug = subName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    let updated: Category[] = [];
+    const targetCat = categories.find(cat => (cat._id || cat.id || cat.slug) === subTargetCatId);
+    if (!targetCat) return;
 
-    if (editingSubId) {
-      updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === subTargetCatId) {
-          const updatedSubs = (cat.subCategoriesList || []).map(s => {
-            if (s.id === editingSubId) {
-              return { ...s, name: subName.trim(), slug: subSlug };
-            }
-            return s;
-          });
-          return { ...cat, subCategoriesList: updatedSubs };
-        }
-        return cat;
-      });
-      alert('Sub-Category updated successfully!');
-    } else {
-      const newSub: SubCategory = {
-        id: `sub_${Date.now()}`,
-        name: subName.trim(),
-        slug: subSlug,
-        subSubCategories: []
-      };
-      updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === subTargetCatId) {
-          return {
-            ...cat,
-            subCategoriesList: [...(cat.subCategoriesList || []), newSub]
-          };
-        }
-        return cat;
-      });
-      alert('Sub-Category added successfully!');
+    const updatedSubs = editingSubId
+      ? (targetCat.subCategoriesList || []).map(s =>
+          s.id === editingSubId ? { ...s, name: subName.trim(), slug: subSlug } : s
+        )
+      : [
+          ...(targetCat.subCategoriesList || []),
+          { id: `sub_${Date.now()}`, name: subName.trim(), slug: subSlug, subSubCategories: [] }
+        ];
+
+    try {
+      const res = await updateCategory(targetCat._id || targetCat.slug, { subCategoriesList: updatedSubs });
+      const savedCat = res?.data || { ...targetCat, subCategoriesList: updatedSubs };
+      setCategories(categories.map(cat =>
+        (cat._id || cat.id || cat.slug) === subTargetCatId ? savedCat : cat
+      ));
+      alert(editingSubId ? 'Sub-Category updated in database!' : 'Sub-Category added to database!');
+      setShowSubModal(false);
+      setEditingSubId(null);
+      setSubName('');
+    } catch (err: any) {
+      alert('Failed to save sub-category: ' + (err.response?.data?.message || err.message));
     }
-
-    setCategories(updated);
-    localStorage.setItem('ats_custom_categories', JSON.stringify(updated));
-
-    setShowSubModal(false);
-    setEditingSubId(null);
-    setSubName('');
   };
 
-  const handleDeleteSubCategory = (catId: string, subId: string) => {
+  const handleDeleteSubCategory = async (catId: string, subId: string) => {
     if (confirm('Delete this Sub-Category?')) {
-      const updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === catId) {
-          return {
-            ...cat,
-            subCategoriesList: (cat.subCategoriesList || []).filter(s => s.id !== subId)
-          };
-        }
-        return cat;
-      });
-      setCategories(updated);
-      localStorage.setItem('ats_custom_categories', JSON.stringify(updated));
+      const targetCat = categories.find(cat => (cat._id || cat.id || cat.slug) === catId);
+      if (!targetCat) return;
+      const updatedSubs = (targetCat.subCategoriesList || []).filter(s => s.id !== subId);
+      try {
+        const res = await updateCategory(targetCat._id || targetCat.slug, { subCategoriesList: updatedSubs });
+        const savedCat = res?.data || { ...targetCat, subCategoriesList: updatedSubs };
+        setCategories(categories.map(cat =>
+          (cat._id || cat.id || cat.slug) === catId ? savedCat : cat
+        ));
+      } catch (err: any) {
+        alert('Failed to delete sub-category: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -647,7 +655,7 @@ export default function AdminDashboardPage() {
     setShowSubSubModal(true);
   };
 
-  const handleSaveSubSubCategory = (e: React.FormEvent) => {
+  const handleSaveSubSubCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subSubTargetCatId || !subSubTargetSubId || !subSubName.trim()) {
       alert('Please choose Category, Sub-Category and enter Sub-Sub Name!');
@@ -655,79 +663,55 @@ export default function AdminDashboardPage() {
     }
 
     const subSubSlug = subSubName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    let updated: Category[] = [];
+    const targetCat = categories.find(cat => (cat._id || cat.id || cat.slug) === subSubTargetCatId);
+    if (!targetCat) return;
 
-    if (editingSubSubId) {
-      updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === subSubTargetCatId) {
-          const updatedSubs = (cat.subCategoriesList || []).map(sub => {
-            if (sub.id === subSubTargetSubId) {
-              const updatedSubSubs = (sub.subSubCategories || []).map(ss => {
-                if (ss.id === editingSubSubId) {
-                  return { ...ss, name: subSubName.trim(), slug: subSubSlug };
-                }
-                return ss;
-              });
-              return { ...sub, subSubCategories: updatedSubSubs };
-            }
-            return sub;
-          });
-          return { ...cat, subCategoriesList: updatedSubs };
-        }
-        return cat;
-      });
-      alert('Sub-Sub-Category updated successfully!');
-    } else {
-      const newSubSub: SubSubCategory = {
-        id: `subsub_${Date.now()}`,
-        name: subSubName.trim(),
-        slug: subSubSlug
-      };
-      updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === subSubTargetCatId) {
-          const updatedSubs = (cat.subCategoriesList || []).map(sub => {
-            if (sub.id === subSubTargetSubId) {
-              return {
-                ...sub,
-                subSubCategories: [...(sub.subSubCategories || []), newSubSub]
-              };
-            }
-            return sub;
-          });
-          return { ...cat, subCategoriesList: updatedSubs };
-        }
-        return cat;
-      });
-      alert('Sub-Sub-Category added successfully!');
+    const updatedSubs = (targetCat.subCategoriesList || []).map(sub => {
+      if (sub.id !== subSubTargetSubId) return sub;
+      const updatedSubSubs = editingSubSubId
+        ? (sub.subSubCategories || []).map(ss =>
+            ss.id === editingSubSubId ? { ...ss, name: subSubName.trim(), slug: subSubSlug } : ss
+          )
+        : [
+            ...(sub.subSubCategories || []),
+            { id: `subsub_${Date.now()}`, name: subSubName.trim(), slug: subSubSlug }
+          ];
+      return { ...sub, subSubCategories: updatedSubSubs };
+    });
+
+    try {
+      const res = await updateCategory(targetCat._id || targetCat.slug, { subCategoriesList: updatedSubs });
+      const savedCat = res?.data || { ...targetCat, subCategoriesList: updatedSubs };
+      setCategories(categories.map(cat =>
+        (cat._id || cat.id || cat.slug) === subSubTargetCatId ? savedCat : cat
+      ));
+      alert(editingSubSubId ? 'Sub-Sub-Category updated in database!' : 'Sub-Sub-Category added to database!');
+      setShowSubSubModal(false);
+      setEditingSubSubId(null);
+      setSubSubName('');
+    } catch (err: any) {
+      alert('Failed to save sub-sub-category: ' + (err.response?.data?.message || err.message));
     }
-
-    setCategories(updated);
-    localStorage.setItem('ats_custom_categories', JSON.stringify(updated));
-
-    setShowSubSubModal(false);
-    setEditingSubSubId(null);
-    setSubSubName('');
   };
 
-  const handleDeleteSubSubCategory = (catId: string, subId: string, subSubId: string) => {
+  const handleDeleteSubSubCategory = async (catId: string, subId: string, subSubId: string) => {
     if (confirm('Delete this Sub-Sub-Category?')) {
-      const updated = categories.map(cat => {
-        if ((cat.id || cat.slug) === catId) {
-          const updatedSubs = (cat.subCategoriesList || []).map(sub => {
-            if (sub.id === subId) {
-              return {
-                ...sub,
-                subSubCategories: (sub.subSubCategories || []).filter(ss => ss.id !== subSubId)
-              };
-            }
-            return sub;
-          });
-          return { ...cat, subCategoriesList: updatedSubs };
-        }
-        return cat;
-      });
-      setCategories(updated);
-      localStorage.setItem('ats_custom_categories', JSON.stringify(updated));
+      const targetCat = categories.find(cat => (cat._id || cat.id || cat.slug) === catId);
+      if (!targetCat) return;
+      const updatedSubs = (targetCat.subCategoriesList || []).map(sub =>
+        sub.id === subId
+          ? { ...sub, subSubCategories: (sub.subSubCategories || []).filter(ss => ss.id !== subSubId) }
+          : sub
+      );
+      try {
+        const res = await updateCategory(targetCat._id || targetCat.slug, { subCategoriesList: updatedSubs });
+        const savedCat = res?.data || { ...targetCat, subCategoriesList: updatedSubs };
+        setCategories(categories.map(cat =>
+          (cat._id || cat.id || cat.slug) === catId ? savedCat : cat
+        ));
+      } catch (err: any) {
+        alert('Failed to delete sub-sub-category: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -801,7 +785,6 @@ export default function AdminDashboardPage() {
     }
 
     setBanners(updated);
-    localStorage.setItem('ats_custom_banners', JSON.stringify(updated));
 
     setBannerTitle('');
     setBannerImage('');
@@ -838,31 +821,27 @@ export default function AdminDashboardPage() {
       }
       const updated = banners.filter((_, i) => i !== idx);
       setBanners(updated);
-      localStorage.setItem('ats_custom_banners', JSON.stringify(updated));
       if (editingBannerIdx === idx) {
         handleCancelBannerEdit();
       }
     }
   };
 
-  const handleSaveProductSectionBanner = (e?: React.FormEvent | React.MouseEvent) => {
+  const handleSaveProductSectionBanner = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!productSectionBanner) {
       alert('Please select or upload a banner image first!');
       return;
     }
     try {
-      localStorage.setItem('ats_product_section_banner', productSectionBanner);
-      localStorage.setItem('ats_product_section_banner_link', productSectionBannerLink || '/products');
-      window.dispatchEvent(new Event('storage'));
-      alert('✓ Products Catalog Section Banner updated successfully!');
+      await Promise.all([
+        updateSetting('product_section_banner', productSectionBanner),
+        updateSetting('product_section_banner_link', productSectionBannerLink || '/products')
+      ]);
+      alert('✓ Products Catalog Section Banner saved to database!');
     } catch (err: any) {
       console.error(err);
-      if (err.name === 'QuotaExceededError' || err.code === 22) {
-        alert('Image file is too large for storage. Please upload a smaller image file or paste an image URL.');
-      } else {
-        alert('Failed to save banner. Error: ' + (err.message || 'Unknown error'));
-      }
+      alert('Failed to save banner to database: ' + (err.response?.data?.message || err.message || 'Unknown error'));
     }
   };
 
@@ -885,7 +864,7 @@ export default function AdminDashboardPage() {
     setShowServiceModal(true);
   };
 
-  const handleSaveService = (e: React.FormEvent) => {
+  const handleSaveService = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!serviceTitle.trim() || !serviceDesc.trim()) {
       alert('Please fill in both Service Title and Description.');
@@ -917,22 +896,30 @@ export default function AdminDashboardPage() {
       updatedList = [newService, ...services];
     }
 
-    setServices(updatedList);
-    localStorage.setItem('ats_custom_services', JSON.stringify(updatedList));
-    setShowServiceModal(false);
-    setEditingServiceId(null);
-    setServiceTitle('');
-    setServiceDesc('');
-    setServiceImage('');
-    setServiceSecondaryImage('');
+    try {
+      await updateSetting('services', updatedList);
+      setServices(updatedList);
+      setShowServiceModal(false);
+      setEditingServiceId(null);
+      setServiceTitle('');
+      setServiceDesc('');
+      setServiceImage('');
+      setServiceSecondaryImage('');
+    } catch (err: any) {
+      alert('Failed to save service to database: ' + (err.response?.data?.message || err.message));
+    }
   };
 
-  const handleDeleteService = (targetId?: string) => {
+  const handleDeleteService = async (targetId?: string) => {
     if (!targetId) return;
     if (confirm('Are you sure you want to delete this service?')) {
       const updated = services.filter(s => (s.id !== targetId && s._id !== targetId));
-      setServices(updated);
-      localStorage.setItem('ats_custom_services', JSON.stringify(updated));
+      try {
+        await updateSetting('services', updated);
+        setServices(updated);
+      } catch (err: any) {
+        alert('Failed to delete service from database: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -957,7 +944,7 @@ export default function AdminDashboardPage() {
     setShowReviewModal(true);
   };
 
-  const handleSaveReview = (e: React.FormEvent) => {
+  const handleSaveReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reviewAuthor.trim() || !reviewQuote.trim()) {
       alert('Please fill in Author/Company Name and Quote.');
@@ -990,17 +977,25 @@ export default function AdminDashboardPage() {
       updated = [newReview, ...partnerReviews];
     }
 
-    setPartnerReviews(updated);
-    localStorage.setItem('ats_custom_partner_reviews', JSON.stringify(updated));
-    setShowReviewModal(false);
+    try {
+      await updateSetting('partner_reviews', updated);
+      setPartnerReviews(updated);
+      setShowReviewModal(false);
+    } catch (err: any) {
+      alert('Failed to save review to database: ' + (err.response?.data?.message || err.message));
+    }
   };
 
-  const handleDeleteReview = (targetId?: string) => {
+  const handleDeleteReview = async (targetId?: string) => {
     if (!targetId) return;
     if (confirm('Are you sure you want to delete this partner review?')) {
       const updated = partnerReviews.filter(r => (r.id !== targetId && r._id !== targetId));
-      setPartnerReviews(updated);
-      localStorage.setItem('ats_custom_partner_reviews', JSON.stringify(updated));
+      try {
+        await updateSetting('partner_reviews', updated);
+        setPartnerReviews(updated);
+      } catch (err: any) {
+        alert('Failed to delete review from database: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -1021,7 +1016,7 @@ export default function AdminDashboardPage() {
     setShowClientModal(true);
   };
 
-  const handleSaveClient = (e: React.FormEvent) => {
+  const handleSaveClient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientName.trim() || !clientLogo.trim()) {
       alert('Please provide Client Name and Logo Image.');
@@ -1050,9 +1045,13 @@ export default function AdminDashboardPage() {
       updated = [newClient, ...keyClients];
     }
 
-    setKeyClients(updated);
-    localStorage.setItem('ats_custom_key_clients', JSON.stringify(updated));
-    setShowClientModal(false);
+    try {
+      await updateSetting('key_clients', updated);
+      setKeyClients(updated);
+      setShowClientModal(false);
+    } catch (err: any) {
+      alert('Failed to save key client to database: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   // FAQ CRUD
@@ -1069,7 +1068,7 @@ export default function AdminDashboardPage() {
     window.scrollTo({ top: 300, behavior: 'smooth' });
   };
 
-  const handleSaveFaq = (e: React.FormEvent) => {
+  const handleSaveFaq = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!faqQuestion.trim() || !faqAnswer.trim()) {
       alert('Please provide both FAQ Question and Answer.');
@@ -1083,7 +1082,6 @@ export default function AdminDashboardPage() {
           ? { ...f, question: faqQuestion.trim(), answer: faqAnswer.trim() }
           : f
       );
-      alert('FAQ updated successfully!');
     } else {
       const newFaq: FAQItem = {
         id: `faq_${Date.now()}`,
@@ -1091,67 +1089,98 @@ export default function AdminDashboardPage() {
         answer: faqAnswer.trim()
       };
       updated = [...faqs, newFaq];
-      alert('FAQ added successfully!');
     }
 
-    setFaqs(updated);
-    localStorage.setItem('ats_custom_faqs', JSON.stringify(updated));
-    setEditingFaqId(null);
-    setFaqQuestion('');
-    setFaqAnswer('');
+    try {
+      await updateSetting('faqs', updated);
+      setFaqs(updated);
+      alert(editingFaqId ? 'FAQ updated in database!' : 'FAQ added to database!');
+      setEditingFaqId(null);
+      setFaqQuestion('');
+      setFaqAnswer('');
+    } catch (err: any) {
+      alert('Failed to save FAQ to database: ' + (err.response?.data?.message || err.message));
+    }
   };
 
-  const handleDeleteFaq = (targetId?: string) => {
+  const handleDeleteFaq = async (targetId?: string) => {
     if (!targetId) return;
     if (confirm('Are you sure you want to delete this FAQ?')) {
       const updated = faqs.filter(f => (f.id !== targetId && f._id !== targetId));
-      setFaqs(updated);
-      localStorage.setItem('ats_custom_faqs', JSON.stringify(updated));
+      try {
+        await updateSetting('faqs', updated);
+        setFaqs(updated);
+      } catch (err: any) {
+        alert('Failed to delete FAQ from database: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
-  const handleDeleteClient = (targetId?: string) => {
+  const handleDeleteClient = async (targetId?: string) => {
     if (!targetId) return;
     if (confirm('Are you sure you want to delete this key client logo?')) {
       const updated = keyClients.filter(c => (c.id !== targetId && c._id !== targetId));
-      setKeyClients(updated);
-      localStorage.setItem('ats_custom_key_clients', JSON.stringify(updated));
+      try {
+        await updateSetting('key_clients', updated);
+        setKeyClients(updated);
+      } catch (err: any) {
+        alert('Failed to delete key client from database: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
   // ABOUT CONTENT SAVE
-  const handleSaveAbout = (e: React.FormEvent) => {
+  const handleSaveAbout = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('ats_custom_about', JSON.stringify(aboutData));
-    alert('About Us page content successfully updated!');
+    try {
+      await updateSetting('about', aboutData);
+      alert('About Us page content saved to database!');
+    } catch (err: any) {
+      alert('Failed to save About Us content: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   // SOCIAL MEDIA SAVE
-  const handleSaveSocials = (e: React.FormEvent) => {
+  const handleSaveSocials = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('ats_custom_socials', JSON.stringify(socials));
-    alert('Social media accounts updated successfully!');
+    try {
+      await updateSetting('socials', socials);
+      alert('Social media accounts saved to database!');
+    } catch (err: any) {
+      alert('Failed to save social media accounts: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   // SEO METADATA SAVE
-  const handleSaveSEO = (e: React.FormEvent) => {
+  const handleSaveSEO = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('ats_custom_seo', JSON.stringify(seo));
-    alert('SEO meta tags and settings successfully updated!');
+    try {
+      await updateSetting('seo', seo);
+      alert('SEO meta tags and settings saved to database!');
+    } catch (err: any) {
+      alert('Failed to save SEO settings: ' + (err.response?.data?.message || err.message));
+    }
   };
 
-  const handleSaveLegal = (e: React.FormEvent) => {
+  const handleSaveLegal = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('ats_custom_legal', JSON.stringify(legalData));
-    alert('Terms & Conditions and Privacy Policy saved successfully!');
+    try {
+      await updateSetting('legal', legalData);
+      alert('Terms & Conditions and Privacy Policy saved to database!');
+    } catch (err: any) {
+      alert('Failed to save legal content: ' + (err.response?.data?.message || err.message));
+    }
   };
 
-  const handleSavePopup = (e: React.FormEvent) => {
+  const handleSavePopup = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('ats_custom_popup', JSON.stringify(popupData));
-    sessionStorage.removeItem('ats_popup_closed'); // Reset so admin can test live immediately
-    localStorage.removeItem('ats_popup_closed');
-    alert('Website Popup Settings saved successfully! (Popup enabled and ready)');
+    try {
+      await updateSetting('popup', popupData);
+      sessionStorage.removeItem('ats_popup_closed');
+      alert('Website Popup Settings saved to database!');
+    } catch (err: any) {
+      alert('Failed to save popup settings: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   // PRODUCT CREATE
@@ -1199,7 +1228,7 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleCreateProduct = (e: React.FormEvent) => {
+  const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       alert('Product name is required!');
@@ -1223,80 +1252,81 @@ export default function AdminDashboardPage() {
     const activeGallery = galleryImages.filter(img => img && img.trim().length > 0);
     const activeFeatures = featuresList.filter(f => f && f.trim().length > 0);
 
-    let updated: Product[] = [];
-    if (editingProductSlug) {
-      updated = products.map(p => {
-        if (p.slug === editingProductSlug) {
-          return {
-            ...p,
-            name: name.trim(),
-            category: prodCategory || p.category,
-            subcategory: prodSubCategory,
-            subSubCategory: prodSubSubCategory,
-            brand: productBrand.trim() || 'ATS Energy',
-            warranty: productWarranty.trim() || 'Official Company Warranty',
-            sizes: parsedSizes.length > 0 ? parsedSizes : undefined,
-            colors: parsedColors.length > 0 ? parsedColors : undefined,
-            videoUrl: videoUrl.trim() || undefined,
-            shortDescription: shortDesc,
-            description: desc || shortDesc,
-            mainImage: mainImage.trim(),
-            gallery: [mainImage.trim(), ...activeGallery],
-            attributes: attributes.filter(a => a.key && a.value),
-            features: activeFeatures.length > 0 ? activeFeatures : ['Heavy Duty ATS Grade', 'Certified BSTI Standards'],
-            featured
-          };
-        }
-        return p;
-      });
-      alert('Product updated successfully!');
-    } else {
-      const newProduct: Product = {
-        name: name.trim(),
-        slug: `${slug}-${Date.now().toString().slice(-4)}`,
-        category: prodCategory || 'Electrical Accessories',
-        subcategory: prodSubCategory,
-        subSubCategory: prodSubSubCategory,
-        brand: productBrand.trim() || 'ATS Energy',
-        warranty: productWarranty.trim() || 'Official Company Warranty',
-        sizes: parsedSizes.length > 0 ? parsedSizes : undefined,
-        colors: parsedColors.length > 0 ? parsedColors : undefined,
-        videoUrl: videoUrl.trim() || undefined,
-        shortDescription: shortDesc,
-        description: desc || shortDesc,
-        mainImage: mainImage.trim(),
-        gallery: [mainImage.trim(), ...activeGallery],
-        attributes: attributes.filter(a => a.key && a.value),
-        features: activeFeatures.length > 0 ? activeFeatures : ['Heavy Duty ATS Grade', 'Certified BSTI Standards', 'Long-life Guarantee'],
-        applications: ['Residential', 'Commercial', 'Industrial'],
-        featured,
-        isAvailable: true
-      };
-      updated = [newProduct, ...products];
-      alert('Product added successfully!');
-    }
+    try {
+      if (editingProductSlug) {
+        const existing = products.find(p => p.slug === editingProductSlug);
+        const payload: Partial<Product> = {
+          name: name.trim(),
+          category: prodCategory || existing?.category || 'Electrical Accessories',
+          subcategory: prodSubCategory,
+          subSubCategory: prodSubSubCategory,
+          brand: productBrand.trim() || 'ATS Energy',
+          warranty: productWarranty.trim() || 'Official Company Warranty',
+          sizes: parsedSizes.length > 0 ? parsedSizes : [],
+          colors: parsedColors.length > 0 ? parsedColors : [],
+          videoUrl: videoUrl.trim() || undefined,
+          shortDescription: shortDesc,
+          description: desc || shortDesc,
+          mainImage: mainImage.trim(),
+          gallery: [mainImage.trim(), ...activeGallery],
+          attributes: attributes.filter(a => a.key && a.value),
+          features: activeFeatures.length > 0 ? activeFeatures : ['Heavy Duty ATS Grade', 'Certified BSTI Standards'],
+          featured
+        };
+        const res = await updateProduct(existing?._id || editingProductSlug, payload);
+        const savedProduct = res?.data || { ...existing, ...payload };
+        setProducts(products.map(p => (p.slug === editingProductSlug ? savedProduct : p)));
+        alert('Product updated in database!');
+      } else {
+        const newProduct: Partial<Product> = {
+          name: name.trim(),
+          slug: `${slug}-${Date.now().toString().slice(-4)}`,
+          category: prodCategory || 'Electrical Accessories',
+          subcategory: prodSubCategory,
+          subSubCategory: prodSubSubCategory,
+          brand: productBrand.trim() || 'ATS Energy',
+          warranty: productWarranty.trim() || 'Official Company Warranty',
+          sizes: parsedSizes.length > 0 ? parsedSizes : undefined,
+          colors: parsedColors.length > 0 ? parsedColors : undefined,
+          videoUrl: videoUrl.trim() || undefined,
+          shortDescription: shortDesc,
+          description: desc || shortDesc,
+          mainImage: mainImage.trim(),
+          gallery: [mainImage.trim(), ...activeGallery],
+          attributes: attributes.filter(a => a.key && a.value),
+          features: activeFeatures.length > 0 ? activeFeatures : ['Heavy Duty ATS Grade', 'Certified BSTI Standards', 'Long-life Guarantee'],
+          applications: ['Residential', 'Commercial', 'Industrial'],
+          featured,
+          isAvailable: true
+        };
+        const res = await createProduct(newProduct);
+        const savedProduct = res?.data || (newProduct as Product);
+        setProducts([savedProduct, ...products]);
+        alert('Product added to database!');
+      }
 
-    setProducts(updated);
-    localStorage.setItem('ats_custom_products', JSON.stringify(updated));
-    setActiveTab('products');
-    setEditingProductSlug(null);
-    
-    setName('');
-    setShortDesc('');
-    setDesc('');
-    setMainImage('');
-    setGalleryImages([]);
-    setCurrentExtraInput('');
-    setVideoUrl('');
-    setProductSizes('');
-    setProductColors('');
-    setProductWarranty('18 Months Replacement');
-    setProductBrand('ATS Energy');
-    setFeaturesList([
-      'Heavy Duty ATS Industrial Grade',
-      'Certified BSTI & BCSIR Standard',
-      'Long-life Energy Saving Guarantee'
-    ]);
+      setActiveTab('products');
+      setEditingProductSlug(null);
+      
+      setName('');
+      setShortDesc('');
+      setDesc('');
+      setMainImage('');
+      setGalleryImages([]);
+      setCurrentExtraInput('');
+      setVideoUrl('');
+      setProductSizes('');
+      setProductColors('');
+      setProductWarranty('18 Months Replacement');
+      setProductBrand('ATS Energy');
+      setFeaturesList([
+        'Heavy Duty ATS Industrial Grade',
+        'Certified BSTI & BCSIR Standard',
+        'Long-life Energy Saving Guarantee'
+      ]);
+    } catch (err: any) {
+      alert('Failed to save product to database: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   const handleOpenEditProduct = (prod: Product) => {
@@ -1348,11 +1378,15 @@ export default function AdminDashboardPage() {
     setActiveTab('new-product');
   };
 
-  const handleDeleteProduct = (slug: string) => {
+  const handleDeleteProduct = async (slug: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
-      const updated = products.filter(p => p.slug !== slug);
-      setProducts(updated);
-      localStorage.setItem('ats_custom_products', JSON.stringify(updated));
+      try {
+        const target = products.find(p => p.slug === slug);
+        await deleteProductApi(target?._id || slug);
+        setProducts(products.filter(p => p.slug !== slug));
+      } catch (err: any) {
+        alert('Failed to delete product from database: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 
@@ -1692,6 +1726,24 @@ export default function AdminDashboardPage() {
 
       {/* 🖥️ Main Dashboard Workspace (Crisp Professional Light Theme) 🖥️ */}
       <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 p-4 sm:p-6 lg:p-10 w-full min-w-0">
+
+        {hasLegacyLocalData && (
+          <div className="mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+            <div className="text-xs text-amber-900">
+              <p className="font-extrabold text-sm">Old Browser Storage Data Detected</p>
+              <p className="text-amber-800 mt-0.5">
+                This browser still has your previous edits in localStorage. Click to upload them directly into your MongoDB database so all browsers stay in sync.
+              </p>
+            </div>
+            <button
+              onClick={handleSyncLocalStorageToDB}
+              disabled={syncingLocalData}
+              className="shrink-0 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-60 text-white text-xs font-bold transition shadow-sm"
+            >
+              {syncingLocalData ? 'Uploading to Database...' : 'Upload Browser Data to Database'}
+            </button>
+          </div>
+        )}
         
         {/* Top Status Bar with Mobile Hamburger */}
         <div className="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-200 mb-6 sm:mb-8 gap-3">

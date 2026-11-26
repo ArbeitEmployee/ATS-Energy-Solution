@@ -56,6 +56,7 @@ app.use('/api/banners', require('./routes/bannerRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
 app.use('/api/inquiries', require('./routes/inquiryRoutes'));
+app.use('/api/settings', require('./routes/settingRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Fallback for static mock when Mongo is offline

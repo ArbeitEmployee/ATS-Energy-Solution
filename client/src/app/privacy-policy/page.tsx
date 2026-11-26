@@ -3,21 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { fallbackLegalContent } from '@/lib/data';
+import { getSetting } from '@/lib/api';
 import { Shield, ChevronRight, Lock } from 'lucide-react';
 
 export default function PrivacyPolicyPage() {
   const [legal, setLegal] = useState(fallbackLegalContent);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('ats_custom_legal');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed) setLegal(parsed);
-      }
-    } catch (e) {
-      console.error(e);
-    }
+    getSetting<typeof fallbackLegalContent>('legal').then((data) => {
+      if (data) setLegal(data);
+    });
   }, []);
 
   return (

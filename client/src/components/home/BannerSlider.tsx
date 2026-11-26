@@ -14,7 +14,7 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
   const [banners, setBanners] = useState<Banner[]>(initialBanners);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Sync with database API and fallback to localStorage if needed
+  // Sync with database API
   useEffect(() => {
     let isMounted = true;
     const syncBanners = async () => {
@@ -24,23 +24,10 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
           const json = await res.json();
           if (isMounted && json?.success && Array.isArray(json.data)) {
             setBanners(json.data);
-            return;
           }
         }
       } catch (err) {
-        // Fallback to localStorage below
-      }
-
-      const saved = localStorage.getItem('ats_custom_banners');
-      if (isMounted && saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            setBanners(parsed);
-          }
-        } catch (e) {
-          // use initial
-        }
+        // Keep initialBanners from server render
       }
     };
 
@@ -48,23 +35,6 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  // Listen to cross-tab updates or admin modifications
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'ats_custom_banners' && e.newValue) {
-        try {
-          const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setBanners(parsed);
-            setCurrentIndex(0);
-          }
-        } catch (err) {}
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Auto slide interval

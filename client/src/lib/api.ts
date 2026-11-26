@@ -110,13 +110,28 @@ export const uploadImage = async (file: File, folder = 'atsenergybd'): Promise<s
 export const getProducts = async (params?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> => {
   try {
     const res = await api.get('/products', { params });
-    if (res.data?.data && res.data.data.length > 0) {
+    if (Array.isArray(res.data?.data)) {
       return res.data.data;
     }
     return filterFallbackProducts(params);
   } catch (err) {
     return filterFallbackProducts(params);
   }
+};
+
+export const createProduct = async (data: Partial<Product>) => {
+  const res = await api.post('/products', data);
+  return res.data;
+};
+
+export const updateProduct = async (idOrSlug: string, data: Partial<Product>) => {
+  const res = await api.put(`/products/${idOrSlug}`, data);
+  return res.data;
+};
+
+export const deleteProductApi = async (idOrSlug: string) => {
+  const res = await api.delete(`/products/${idOrSlug}`);
+  return res.data;
 };
 
 export const getProductBySlug = async (slug: string): Promise<Product | null> => {
@@ -134,13 +149,54 @@ export const getProductBySlug = async (slug: string): Promise<Product | null> =>
 export const getCategories = async (): Promise<Category[]> => {
   try {
     const res = await api.get('/categories');
-    if (res.data?.data && res.data.data.length > 0) {
+    if (Array.isArray(res.data?.data)) {
       return res.data.data;
     }
     return fallbackCategories;
   } catch (err) {
     return fallbackCategories;
   }
+};
+
+export const createCategory = async (data: Partial<Category>) => {
+  const res = await api.post('/categories', data);
+  return res.data;
+};
+
+export const updateCategory = async (idOrSlug: string, data: Partial<Category>) => {
+  const res = await api.put(`/categories/${idOrSlug}`, data);
+  return res.data;
+};
+
+export const deleteCategoryApi = async (idOrSlug: string) => {
+  const res = await api.delete(`/categories/${idOrSlug}`);
+  return res.data;
+};
+
+export const getAllSettings = async (): Promise<Record<string, any>> => {
+  try {
+    const res = await api.get('/settings');
+    if (res.data?.success && res.data.data) {
+      return res.data.data;
+    }
+    return {};
+  } catch (err) {
+    return {};
+  }
+};
+
+export const getSetting = async <T = any>(key: string): Promise<T | null> => {
+  try {
+    const res = await api.get(`/settings/${key}`);
+    return res.data?.data ?? null;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const updateSetting = async (key: string, value: any) => {
+  const res = await api.put(`/settings/${key}`, { value });
+  return res.data;
 };
 
 export const getBanners = async (): Promise<Banner[]> => {

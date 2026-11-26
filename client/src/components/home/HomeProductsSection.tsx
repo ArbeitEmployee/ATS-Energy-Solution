@@ -8,39 +8,32 @@ import { Product } from '@/types';
 
 interface HomeProductsSectionProps {
   initialProducts: Product[];
+  initialBanner?: string;
+  initialBannerLink?: string;
 }
 
-export default function HomeProductsSection({ initialProducts }: HomeProductsSectionProps) {
+export default function HomeProductsSection({
+  initialProducts,
+  initialBanner,
+  initialBannerLink,
+}: HomeProductsSectionProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [productSectionBanner, setProductSectionBanner] = useState<string>(
-    'https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg'
+    initialBanner ||
+      'https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg'
   );
-  const [productSectionBannerLink, setProductSectionBannerLink] = useState<string>('/products');
+  const [productSectionBannerLink, setProductSectionBannerLink] = useState<string>(
+    initialBannerLink || '/products'
+  );
 
   useEffect(() => {
-    try {
-      // Sync products from localStorage if updated via admin
-      const savedProds = localStorage.getItem('ats_custom_products');
-      if (savedProds) {
-        const parsed = JSON.parse(savedProds);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
-        }
-      }
+    setProducts(initialProducts);
+  }, [initialProducts]);
 
-      // Sync product section banner
-      const savedBanner = localStorage.getItem('ats_product_section_banner');
-      if (savedBanner) {
-        setProductSectionBanner(savedBanner);
-      }
-      const savedLink = localStorage.getItem('ats_product_section_banner_link');
-      if (savedLink) {
-        setProductSectionBannerLink(savedLink);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  useEffect(() => {
+    if (initialBanner) setProductSectionBanner(initialBanner);
+    if (initialBannerLink) setProductSectionBannerLink(initialBannerLink);
+  }, [initialBanner, initialBannerLink]);
 
   return (
     <section className="py-8 sm:py-16 bg-slate-50 border-b border-slate-200">

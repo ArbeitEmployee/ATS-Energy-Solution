@@ -42,28 +42,13 @@ export default function ProductsCatalogClient({
   const [expandedSubs, setExpandedSubs] = useState<Record<string, boolean>>({});
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Sync custom categories & products from localStorage if edited by admin
   useEffect(() => {
-    try {
-      const savedCats = localStorage.getItem('ats_custom_categories');
-      if (savedCats) {
-        const parsed = JSON.parse(savedCats);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCategories(parsed);
-        }
-      }
+    setProducts(initialProducts);
+  }, [initialProducts]);
 
-      const savedProds = localStorage.getItem('ats_custom_products');
-      if (savedProds) {
-        const parsed = JSON.parse(savedProds);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  useEffect(() => {
+    setCategories(propCategories);
+  }, [propCategories]);
 
   // Set initial expanded category if category is in URL
   useEffect(() => {
