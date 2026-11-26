@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Banner } from '@/types';
 import { API_BASE } from '@/lib/api';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
 interface BannerSliderProps {
@@ -69,31 +69,30 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
             }`}
           >
             {/* Main Clean Banner Image - 100% visible, no top or bottom clipping */}
-            <img
-              src={b.imageUrl}
-              alt={b.title || 'ATS Energy Banner'}
-              className="w-full h-full object-fill md:object-cover md:object-center"
-            />
+            {b.linkUrl ? (
+              <Link href={b.linkUrl} className="block w-full h-full">
+                <img
+                  src={b.imageUrl}
+                  alt={b.title || 'ATS Energy Banner'}
+                  className="w-full h-full object-fill md:object-cover md:object-center"
+                />
+              </Link>
+            ) : (
+              <img
+                src={b.imageUrl}
+                alt={b.title || 'ATS Energy Banner'}
+                className="w-full h-full object-fill md:object-cover md:object-center"
+              />
+            )}
 
-            {/* Optional Overlay Title & Link (Only if user actually provided a title or link) */}
-            {(b.title || b.linkUrl) && (
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/20 to-transparent flex items-center">
+            {/* Optional Overlay Title (Only if user actually provided a title) */}
+            {b.title && (
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/20 to-transparent flex items-center pointer-events-none">
                 <div className="max-w-7xl mx-auto px-6 sm:px-12 w-full">
                   <div className="max-w-lg space-y-2 sm:space-y-3 text-white">
-                    {b.title && (
-                      <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight drop-shadow-md">
-                        {b.title}
-                      </h2>
-                    )}
-                    {b.linkUrl && (
-                      <Link
-                        href={b.linkUrl}
-                        className="inline-flex items-center gap-1.5 sm:gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl transition text-[10px] sm:text-xs md:text-sm shadow-md"
-                      >
-                        <span>Learn More</span>
-                        <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </Link>
-                    )}
+                    <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight drop-shadow-md">
+                      {b.title}
+                    </h2>
                   </div>
                 </div>
               </div>
