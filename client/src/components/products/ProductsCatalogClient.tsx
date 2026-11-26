@@ -30,6 +30,7 @@ export default function ProductsCatalogClient({
   initialCategorySlug = '',
   initialSearch = ''
 }: ProductsCatalogClientProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [categories, setCategories] = useState<Category[]>(propCategories);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategorySlug);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
@@ -49,6 +50,14 @@ export default function ProductsCatalogClient({
         const parsed = JSON.parse(savedCats);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setCategories(parsed);
+        }
+      }
+
+      const savedProds = localStorage.getItem('ats_custom_products');
+      if (savedProds) {
+        const parsed = JSON.parse(savedProds);
+        if (Array.isArray(parsed)) {
+          setProducts(parsed);
         }
       }
     } catch (e) {
@@ -89,7 +98,7 @@ export default function ProductsCatalogClient({
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
-    return initialProducts.filter(p => {
+    return products.filter(p => {
       // 1. Search Query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -120,7 +129,7 @@ export default function ProductsCatalogClient({
 
       return true;
     });
-  }, [initialProducts, searchQuery, selectedCategory, selectedSubCategory, selectedSubSubCategory, activeCategoryObj]);
+  }, [products, searchQuery, selectedCategory, selectedSubCategory, selectedSubSubCategory, activeCategoryObj]);
 
   const handleSelectAll = () => {
     setSelectedCategory('');
@@ -273,7 +282,7 @@ export default function ProductsCatalogClient({
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                     !selectedCategory ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                   }`}>
-                    {initialProducts.length}
+                    {products.length}
                   </span>
                 </button>
               </div>
@@ -493,7 +502,7 @@ export default function ProductsCatalogClient({
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                 {filteredProducts.map((product, idx) => (
-                  <ProductCard key={idx} product={product} />
+                  <ProductCard key={product.slug || product._id || idx} product={product} />
                 ))}
               </div>
             )}

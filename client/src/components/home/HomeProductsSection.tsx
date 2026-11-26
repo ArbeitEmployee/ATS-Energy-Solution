@@ -23,7 +23,7 @@ export default function HomeProductsSection({ initialProducts }: HomeProductsSec
       const savedProds = localStorage.getItem('ats_custom_products');
       if (savedProds) {
         const parsed = JSON.parse(savedProds);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           setProducts(parsed);
         }
       }

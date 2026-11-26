@@ -1,6 +1,8 @@
 import { getProducts, getCategories } from '@/lib/api';
 import ProductsCatalogClient from '@/components/products/ProductsCatalogClient';
 
+export const dynamic = 'force-dynamic';
+
 interface ProductsPageProps {
   searchParams: Promise<{
     category?: string;
