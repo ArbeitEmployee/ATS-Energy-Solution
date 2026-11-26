@@ -49,11 +49,8 @@ export default function HomeProductsSection({ initialProducts }: HomeProductsSec
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
           <div>
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-2">
-              Real ATS Catalog
-            </span>
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Our Products ({products.length} Items)
+              Our Products
             </h2>
           </div>
           <Link
