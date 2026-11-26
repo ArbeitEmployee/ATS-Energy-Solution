@@ -31,19 +31,16 @@ const initialBanners = [
 exports.getBanners = async (req, res) => {
   try {
     const banners = await Banner.find({ isActive: true }).sort({ order: 1 });
-    if (!banners || banners.length === 0) {
-      return res.json({ success: true, count: initialBanners.length, data: initialBanners });
-    }
     res.json({ success: true, count: banners.length, data: banners });
   } catch (error) {
-    res.json({ success: true, count: initialBanners.length, data: initialBanners });
+    res.status(500).json({ success: false, message: error.message, data: [] });
   }
 };
 
 exports.getAllBannersAdmin = async (req, res) => {
   try {
     const banners = await Banner.find().sort({ order: 1, createdAt: -1 });
-    res.json({ success: true, count: banners.length, data: banners.length > 0 ? banners : initialBanners });
+    res.json({ success: true, count: banners.length, data: banners });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

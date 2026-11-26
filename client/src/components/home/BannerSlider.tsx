@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Banner } from '@/types';
-import { getBanners } from '@/lib/api';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -19,10 +18,13 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
     let isMounted = true;
     const syncBanners = async () => {
       try {
-        const dbBanners = await getBanners();
-        if (isMounted && Array.isArray(dbBanners) && dbBanners.length > 0) {
-          setBanners(dbBanners);
-          return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/banners`, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          if (isMounted && json?.success && Array.isArray(json.data)) {
+            setBanners(json.data);
+            return;
+          }
         }
       } catch (err) {
         // Fallback to localStorage below
@@ -32,7 +34,7 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
       if (isMounted && saved) {
         try {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             setBanners(parsed);
           }
         } catch (e) {

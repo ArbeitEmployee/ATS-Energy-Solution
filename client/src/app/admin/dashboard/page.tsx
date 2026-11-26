@@ -254,7 +254,7 @@ export default function AdminDashboardPage() {
 
     getBanners()
       .then((dbBanners) => {
-        if (Array.isArray(dbBanners) && dbBanners.length > 0) {
+        if (Array.isArray(dbBanners)) {
           setBanners(dbBanners);
           localStorage.setItem('ats_custom_banners', JSON.stringify(dbBanners));
         }

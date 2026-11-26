@@ -142,7 +142,7 @@ export const getCategories = async (): Promise<Category[]> => {
 export const getBanners = async (): Promise<Banner[]> => {
   try {
     const res = await api.get('/banners');
-    if (res.data?.data && res.data.data.length > 0) {
+    if (res.data?.success && Array.isArray(res.data.data)) {
       return res.data.data;
     }
     return initialBanners;
