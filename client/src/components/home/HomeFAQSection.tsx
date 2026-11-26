@@ -40,18 +40,9 @@ export default function HomeFAQSection() {
           
           {/* Left Side: Bold Corporate FAQ Typography (No image, exact reference layout) */}
           <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-28">
-            <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-xs uppercase tracking-widest">
-              <span className="text-xl leading-none">+</span>
-              <span>General Inquiries</span>
-            </div>
-
             <h2 className="text-5xl sm:text-7xl font-black text-slate-950 tracking-tight leading-none">
               FAQ<span className="text-emerald-500">.</span>
             </h2>
-
-            <p className="text-sm font-semibold text-slate-500 tracking-wide uppercase pt-1">
-              Frequently Asked Questions
-            </p>
 
             <div className="pt-6 hidden lg:block border-t border-slate-200/80 max-w-xs space-y-2">
               <p className="text-xs text-slate-600 leading-relaxed">
