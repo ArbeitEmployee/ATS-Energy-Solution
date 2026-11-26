@@ -2,29 +2,7 @@ import { Product, Category, Banner, ServiceItem, PartnerReview, KeyClient, About
 
 export const atsOfficialLogo = "https://atsenergybd.com/wp-content/uploads/2025/09/PHOTO-2026-11-04-12-23-02.jpg";
 
-export const initialBanners: Banner[] = [
-  {
-    title: "ATS Pure Copper Cables & Wiring Solutions",
-    subtitle: "High Conductivity BDS 900 Standard Certified",
-    imageUrl: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg",
-    linkUrl: "/products",
-    order: 1
-  },
-  {
-    title: "Commercial LED Lighting & Energy Savers",
-    subtitle: "AC LEDs 5W to 22W & Smart 12W Emergency Lights",
-    imageUrl: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-2-768x305.jpeg",
-    linkUrl: "/products",
-    order: 2
-  },
-  {
-    title: "Heavy-Duty Switches, MCBs & Solar Systems",
-    subtitle: "Trusted Dealership Business Across Bangladesh",
-    imageUrl: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-3-768x305.jpeg",
-    linkUrl: "/products",
-    order: 3
-  }
-];
+export const initialBanners: Banner[] = [];
 
 export const fallbackCategories: Category[] = [
   {

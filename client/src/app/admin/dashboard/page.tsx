@@ -265,10 +265,10 @@ export default function AdminDashboardPage() {
           try {
             setBanners(JSON.parse(savedBanners));
           } catch (e) {
-            setBanners(initialBanners);
+            setBanners([]);
           }
         } else {
-          setBanners(initialBanners);
+          setBanners([]);
         }
       });
 

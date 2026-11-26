@@ -1,33 +1,5 @@
 const Banner = require('../models/Banner');
 
-// Default initial banners from ATS Energy
-const initialBanners = [
-  {
-    title: "ATS Pure Copper Cables & Wiring Solutions",
-    subtitle: "High Conductivity BDS 900 Standard Certified",
-    imageUrl: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.37-1-768x305.jpeg",
-    linkUrl: "/products?category=wiring-cables",
-    order: 1,
-    isActive: true
-  },
-  {
-    title: "Commercial LED Lighting & Energy Savers",
-    subtitle: "AC LEDs 5W to 22W & Smart 12W Emergency Lights",
-    imageUrl: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-2-768x305.jpeg",
-    linkUrl: "/products?category=lighting-solutions",
-    order: 2,
-    isActive: true
-  },
-  {
-    title: "Heavy-Duty Switches, MCBs & Solar Systems",
-    subtitle: "Trusted Dealership Business Across Bangladesh",
-    imageUrl: "https://atsenergybd.com/wp-content/uploads/2025/09/WhatsApp-Image-2025-09-07-at-17.26.36-3-768x305.jpeg",
-    linkUrl: "/products?category=electrical-accessories",
-    order: 3,
-    isActive: true
-  }
-];
-
 exports.getBanners = async (req, res) => {
   try {
     const banners = await Banner.find({ isActive: true }).sort({ order: 1 });

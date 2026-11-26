@@ -9,8 +9,15 @@ dotenv.config();
 
 const app = express();
 
-// Connect to Database
-connectDB();
+// Ensure MongoDB Atlas is connected on every request (essential for Vercel Serverless)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Database connection failed: ' + err.message });
+  }
+});
 
 // Security & Utility Middlewares
 app.use(helmet());

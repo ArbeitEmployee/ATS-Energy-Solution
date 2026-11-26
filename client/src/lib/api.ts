@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Product, Category, Inquiry, Banner } from '@/types';
-import { fallbackProducts, fallbackCategories, initialBanners } from './data';
+import { fallbackProducts, fallbackCategories } from './data';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -145,9 +145,9 @@ export const getBanners = async (): Promise<Banner[]> => {
     if (res.data?.success && Array.isArray(res.data.data)) {
       return res.data.data;
     }
-    return initialBanners;
+    return [];
   } catch (err) {
-    return initialBanners;
+    return [];
   }
 };
 
