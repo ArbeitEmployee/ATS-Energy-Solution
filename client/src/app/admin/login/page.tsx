@@ -7,8 +7,8 @@ import api from '@/lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@atsenergybd.com');
-  const [password, setPassword] = useState('adminpassword123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} autoComplete="off" className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
               Admin Email
@@ -78,9 +78,11 @@ export default function AdminLoginPage() {
               <input
                 type="email"
                 required
+                autoComplete="off"
+                placeholder="Enter admin email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-emerald-500"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-600 text-sm focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -94,9 +96,11 @@ export default function AdminLoginPage() {
               <input
                 type="password"
                 required
+                autoComplete="new-password"
+                placeholder="Enter secret password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm focus:outline-none focus:border-emerald-500"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-600 text-sm focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -115,7 +119,7 @@ export default function AdminLoginPage() {
 
         <div className="mt-8 pt-6 border-t border-slate-800 text-center">
           <span className="text-[11px] text-slate-500">
-            Demo Credentials Pre-filled: <span className="text-slate-400">admin@atsenergybd.com</span>
+            Authorized ATS Energy Administrators Only
           </span>
         </div>
       </div>
