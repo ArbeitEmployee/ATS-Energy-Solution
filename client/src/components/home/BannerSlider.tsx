@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Banner } from '@/types';
+import { API_BASE } from '@/lib/api';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -18,7 +19,7 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
     let isMounted = true;
     const syncBanners = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/banners`, { cache: 'no-store' });
+        const res = await fetch(`${API_BASE}/banners`, { cache: 'no-store' });
         if (res.ok) {
           const json = await res.json();
           if (isMounted && json?.success && Array.isArray(json.data)) {

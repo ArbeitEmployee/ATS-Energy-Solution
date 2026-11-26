@@ -2,7 +2,11 @@ import axios from 'axios';
 import { Product, Category, Inquiry, Banner } from '@/types';
 import { fallbackProducts, fallbackCategories } from './data';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const DEFAULT_API_URL = process.env.NODE_ENV === 'production'
+  ? 'https://server-peach-rho.vercel.app/api'
+  : 'http://localhost:5000/api';
+
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
 
 const api = axios.create({
   baseURL: API_BASE,
