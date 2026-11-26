@@ -58,47 +58,51 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
 
   return (
     <div className="relative w-full overflow-hidden bg-slate-950">
-      {/* Dynamic responsive height container matched to banner natural 2.52:1 ratio */}
-      <div className="relative w-full aspect-[2.52/1] max-h-[580px]">
+      {/* Natural-aspect responsive container: zero cropping on mobile, laptop, and desktop */}
+      <div className="relative w-full flex items-center justify-center">
         {/* Banner Slide */}
-        {banners.map((b, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              idx === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-            }`}
-          >
-            {/* Main Clean Banner Image - 100% visible, no top or bottom clipping */}
-            {b.linkUrl ? (
-              <Link href={b.linkUrl} className="block w-full h-full">
-                <img
-                  src={b.imageUrl}
-                  alt={b.title || 'ATS Energy Banner'}
-                  className="w-full h-full object-fill md:object-cover md:object-center"
-                />
-              </Link>
-            ) : (
-              <img
-                src={b.imageUrl}
-                alt={b.title || 'ATS Energy Banner'}
-                className="w-full h-full object-fill md:object-cover md:object-center"
-              />
-            )}
+        {banners.map((b, idx) => {
+          const isActive = idx === currentIndex;
+          const imgElement = (
+            <img
+              src={b.imageUrl}
+              alt={b.title || 'ATS Energy Banner'}
+              className="w-full h-auto max-h-[760px] object-contain mx-auto block"
+            />
+          );
 
-            {/* Optional Overlay Title (Only if user actually provided a title) */}
-            {b.title && (
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/20 to-transparent flex items-center pointer-events-none">
-                <div className="max-w-7xl mx-auto px-6 sm:px-12 w-full">
-                  <div className="max-w-lg space-y-2 sm:space-y-3 text-white">
-                    <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight drop-shadow-md">
-                      {b.title}
-                    </h2>
+          return (
+            <div
+              key={b._id || idx}
+              className={`w-full transition-opacity duration-700 ease-in-out ${
+                isActive
+                  ? 'relative z-10 opacity-100'
+                  : 'absolute inset-0 z-0 opacity-0 pointer-events-none flex items-center justify-center'
+              }`}
+            >
+              {b.linkUrl ? (
+                <Link href={b.linkUrl} className="block w-full">
+                  {imgElement}
+                </Link>
+              ) : (
+                imgElement
+              )}
+
+              {/* Optional Overlay Title (Only if user actually provided a title) */}
+              {b.title && (
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/20 to-transparent flex items-center pointer-events-none">
+                  <div className="max-w-7xl mx-auto px-6 sm:px-12 w-full">
+                    <div className="max-w-lg space-y-2 sm:space-y-3 text-white">
+                      <h2 className="text-sm sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight drop-shadow-md">
+                        {b.title}
+                      </h2>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
 
         {/* Navigation Arrows */}
         {banners.length > 1 && (
