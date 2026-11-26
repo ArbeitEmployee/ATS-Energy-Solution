@@ -9,6 +9,8 @@ import HomeProductsSection from '@/components/home/HomeProductsSection';
 import PartnerReviewsAndClients from '@/components/home/PartnerReviewsAndClients';
 import HomeFAQSection from '@/components/home/HomeFAQSection';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const [products, categories, banners] = await Promise.all([
     getProducts(),

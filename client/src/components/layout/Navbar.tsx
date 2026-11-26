@@ -24,6 +24,7 @@ export default function Navbar() {
   }, []);
 
   return (
+    <>
     <header className="w-full sticky top-0 z-50 bg-slate-50/95 backdrop-blur-md border-b border-slate-200/90 shadow-sm transition-all">
       {/* Top Bar with ONLY Phone number (+880 1848-160565) and Social Media Icons */}
       <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 sm:px-8 border-b border-slate-800">
@@ -120,10 +121,11 @@ export default function Navbar() {
           <Menu className="w-6 h-6" />
         </button>
       </div>
+    </header>
 
       {/* Mobile Drawer (Side-Slide from Right - Completely Self-Contained Fixed Overlay) */}
       <div 
-        className={`fixed inset-0 top-0 left-0 w-screen h-[100dvh] z-[9999] md:hidden transition-all duration-300 ${
+        className={`fixed inset-0 top-0 left-0 w-full h-[100dvh] overflow-hidden z-[9999] md:hidden transition-all duration-300 ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
         }`}
       >
@@ -214,6 +216,6 @@ export default function Navbar() {
           </div>
         </aside>
       </div>
-    </header>
+    </>
   );
 }

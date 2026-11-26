@@ -16,11 +16,11 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased selection:bg-emerald-500 selection:text-slate-950">
+    <div className="min-h-screen w-full overflow-x-clip flex flex-col bg-slate-50 text-slate-800 antialiased selection:bg-emerald-500 selection:text-slate-950">
       <SEOMetaInjector />
       <WebsitePopup />
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 w-full min-w-0">{children}</main>
       <Footer />
     </div>
   );

@@ -63,7 +63,7 @@ export default function HomeCategoriesSection({ initialCategories }: HomeCategor
                 className="group flex flex-col items-center text-center cursor-pointer p-1"
               >
                 {/* Seamless Container: completely blends with the background */}
-                <div className="w-36 h-36 sm:w-40 sm:h-40 lg:w-44 lg:h-44 flex items-center justify-center p-2 mb-3 bg-transparent">
+                <div className="w-full max-w-[144px] aspect-square sm:w-40 sm:h-40 sm:max-w-none lg:w-44 lg:h-44 flex items-center justify-center p-2 mb-3 bg-transparent">
                   <img
                     src={imageSrc}
                     alt={cat.name}

@@ -6,7 +6,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_BASE,
-  timeout: 5000
+  timeout: 15000
 });
 
 // Interceptor for Admin JWT token
@@ -149,6 +149,21 @@ export const getBanners = async (): Promise<Banner[]> => {
   } catch (err) {
     return initialBanners;
   }
+};
+
+export const createBanner = async (data: Partial<Banner>) => {
+  const res = await api.post('/banners', data);
+  return res.data;
+};
+
+export const updateBanner = async (id: string, data: Partial<Banner>) => {
+  const res = await api.put(`/banners/${id}`, data);
+  return res.data;
+};
+
+export const deleteBannerApi = async (id: string) => {
+  const res = await api.delete(`/banners/${id}`);
+  return res.data;
 };
 
 export const submitInquiry = async (data: Partial<Inquiry>) => {

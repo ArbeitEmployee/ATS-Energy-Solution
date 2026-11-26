@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { Product, Attribute, Banner, Category, SubCategory, SubSubCategory, ServiceItem, PartnerReview, KeyClient, AboutContent, SocialMediaLinks, SEOMetadata, LegalContent, PopupSettings, Inquiry, FAQItem } from '@/types';
 import { fallbackProducts, initialBanners, fallbackCategories, fallbackServices, fallbackPartnerReviews, fallbackKeyClients, fallbackAboutContent, fallbackSocialMedia, fallbackSEO, fallbackLegalContent, fallbackPopupSettings, fallbackFAQs, atsOfficialLogo } from '@/lib/data';
-import { getInquiries, updateInquiryStatus, deleteInquiry } from '@/lib/api';
+import { getInquiries, updateInquiryStatus, deleteInquiry, getBanners, createBanner, updateBanner, deleteBannerApi } from '@/lib/api';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
@@ -252,16 +252,25 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    const savedBanners = localStorage.getItem('ats_custom_banners');
-    if (savedBanners) {
-      try {
-        setBanners(JSON.parse(savedBanners));
-      } catch (e) {
-        setBanners(initialBanners);
-      }
-    } else {
-      setBanners(initialBanners);
-    }
+    getBanners()
+      .then((dbBanners) => {
+        if (Array.isArray(dbBanners) && dbBanners.length > 0) {
+          setBanners(dbBanners);
+          localStorage.setItem('ats_custom_banners', JSON.stringify(dbBanners));
+        }
+      })
+      .catch(() => {
+        const savedBanners = localStorage.getItem('ats_custom_banners');
+        if (savedBanners) {
+          try {
+            setBanners(JSON.parse(savedBanners));
+          } catch (e) {
+            setBanners(initialBanners);
+          }
+        } else {
+          setBanners(initialBanners);
+        }
+      });
 
     const savedServices = localStorage.getItem('ats_custom_services');
     if (savedServices) {
@@ -723,7 +732,7 @@ export default function AdminDashboardPage() {
   };
 
   // BANNER ADD / EDIT
-  const handleSaveBanner = (e: React.FormEvent) => {
+  const handleSaveBanner = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bannerImage) {
       alert('দয়া করে ব্যানার ছবি আপলোড করুন অথবা Image URL দিন!');
@@ -732,9 +741,28 @@ export default function AdminDashboardPage() {
 
     let updated: Banner[] = [];
     if (editingBannerIdx !== null) {
+      const target = banners[editingBannerIdx];
+      const payload = {
+        title: bannerTitle.trim() || '',
+        imageUrl: bannerImage,
+        linkUrl: bannerLink.trim() || '/products'
+      };
+      let savedDoc: Banner | null = null;
+      try {
+        if (target?._id) {
+          const res = await updateBanner(target._id, payload);
+          savedDoc = res?.data || null;
+        } else {
+          const res = await createBanner({ ...payload, order: target?.order ?? editingBannerIdx + 1, isActive: true });
+          savedDoc = res?.data || null;
+        }
+      } catch (err) {
+        console.error('Failed to update banner in DB:', err);
+      }
+
       updated = banners.map((b, i) => {
         if (i === editingBannerIdx) {
-          return {
+          return savedDoc || {
             ...b,
             title: bannerTitle.trim() || undefined,
             imageUrl: bannerImage,
@@ -746,13 +774,28 @@ export default function AdminDashboardPage() {
       alert('Banner updated successfully!');
       setEditingBannerIdx(null);
     } else {
-      const newBanner: Banner = {
+      const payload = {
+        title: bannerTitle.trim() || '',
+        imageUrl: bannerImage,
+        linkUrl: bannerLink.trim() || '/products',
+        order: banners.length + 1,
+        isActive: true
+      };
+      let newBanner: Banner = {
         title: bannerTitle.trim() || undefined,
         imageUrl: bannerImage,
         linkUrl: bannerLink.trim() || undefined,
         order: banners.length + 1,
         isActive: true
       };
+      try {
+        const res = await createBanner(payload);
+        if (res?.data) {
+          newBanner = res.data;
+        }
+      } catch (err) {
+        console.error('Failed to save banner in DB:', err);
+      }
       updated = [newBanner, ...banners];
       alert('Banner added successfully!');
     }
@@ -783,8 +826,16 @@ export default function AdminDashboardPage() {
     setBannerLink('');
   };
 
-  const handleDeleteBanner = (idx: number) => {
+  const handleDeleteBanner = async (idx: number) => {
     if (confirm('Are you sure you want to remove this banner?')) {
+      const target = banners[idx];
+      if (target?._id) {
+        try {
+          await deleteBannerApi(target._id);
+        } catch (err) {
+          console.error('Failed to delete banner from DB:', err);
+        }
+      }
       const updated = banners.filter((_, i) => i !== idx);
       setBanners(updated);
       localStorage.setItem('ats_custom_banners', JSON.stringify(updated));

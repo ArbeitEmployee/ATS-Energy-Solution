@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Banner } from '@/types';
+import { getBanners } from '@/lib/api';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -13,20 +14,37 @@ export default function BannerSlider({ initialBanners }: BannerSliderProps) {
   const [banners, setBanners] = useState<Banner[]>(initialBanners);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Sync with client-side localStorage where Admin uploads banners
+  // Sync with database API and fallback to localStorage if needed
   useEffect(() => {
-    const saved = localStorage.getItem('ats_custom_banners');
-    if (saved) {
+    let isMounted = true;
+    const syncBanners = async () => {
       try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setBanners(parsed);
+        const dbBanners = await getBanners();
+        if (isMounted && Array.isArray(dbBanners) && dbBanners.length > 0) {
+          setBanners(dbBanners);
           return;
         }
-      } catch (e) {
-        // use initial
+      } catch (err) {
+        // Fallback to localStorage below
       }
-    }
+
+      const saved = localStorage.getItem('ats_custom_banners');
+      if (isMounted && saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setBanners(parsed);
+          }
+        } catch (e) {
+          // use initial
+        }
+      }
+    };
+
+    syncBanners();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Listen to cross-tab updates or admin modifications
